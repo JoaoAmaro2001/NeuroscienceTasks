@@ -1,17 +1,16 @@
 %% Directories
-cd('C:\Users\SpikeUrban\Documents\JoaoRepo\WorkRepo\WorkRepo');
+cd('C:\git\JoaoAmaro2001\psychiatry-study');
 orip = pwd; % The root directory for scripts and images
+addpath(genpath(orip));
+stim_path = fullfile(orip,'stimuli');
 % root = 'C:\toolbox\Psychtoolbox';
 % addpath(genpath(root));
 % cd(root);
 % SetupPyschtoolbox % -> For troubleshooting
-main_path = fullfile(orip,'Psychiatry_fMRI');
-addpath(genpath(main_path));
-stim_path = fullfile(main_path,'stimuli');
+
 
 %% Prelims
 % build_videos_blocks; % get the random trial order (done)
-cd(fullfile(orip,'E'));
 settings_training;
 settings_2step;
 
