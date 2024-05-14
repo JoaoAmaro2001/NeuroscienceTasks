@@ -29,7 +29,8 @@ clear screen
 Screen('Preference', 'SkipSyncTests', 1); % Is this safe?
 Screen('Preference','VisualDebugLevel', 0); % Minimum amount of diagnostic output
 whichScreen = max(Screen('Screens')); % Get the screen numbers
-[window1, rect] = Screen('OpenWindow', whichScreen, backgroundColor, [0 0 600 300]); % For testing purposes with 1 screen only
+% [window1, rect] = Screen('OpenWindow', whichScreen, backgroundColor, [0 0 800 600]); % For testing purposes with 1 screen only
+[window1, rect] = Screen('OpenWindow', whichScreen, backgroundColor, [0 0 800 600], );
 % [window1, rect] = Screen('Openwindow',whichScreen,backgroundColor,[],[],2); % Use with 2 screens
 slack = Screen('GetFlipInterval', window1)/2; %The flip interval is half of the monitor refresh rate; why is it here?
 W=rect(RectRight); % screen width
@@ -91,11 +92,11 @@ timeBetweenTrials = 1;
 % volumes = 256;
 
 try
-    s=serialport('COM3', 57600); %The stimbox works at 57600 s/s
-    % s=serialport('COM4', 57600); %The stimbox works at 57600 s/s
-    % s.Timeout=trialTimeout-ImageDuration; %Max wait time for user input
-    s.Timeout=TR; % Max wait time for user input
-    disp("It's ok")
+s=serialport('COM3', 57600); %The stimbox works at 57600 s/s
+% s=serialport('COM4', 57600); %The stimbox works at 57600 s/s
+% s.Timeout=trialTimeout-ImageDuration; %Max wait time for user input
+s.Timeout=TR; %Max wait time for user input
+disp("It's ok")
 catch
     s=[];
     disp('No serial port communication')
