@@ -78,17 +78,40 @@ timeBetweenTrials = 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Setting the serial communication
 
-% % serial 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % Information
+
+% Parameters
+% -------
+% num_volumes
+%     Number of volumes
+% num_slices
+%     Number of slices in each volume
+% trigger_slice
+%     Slice number to trigger on
+% trigger_volume
+%     How often to trigger on a volume. 
+% pulse_length
+%     Pulse length in ms. Only needed in simulation mode.
+% TR_time
+%     TR time in ms. Only needed in simulation mode.
+% optional_trigger_slice
+%     0 for triggering on the slice typed above. 1 for triggering on each slice. 2 for triggering on random slice. (1 and 2 override above settings)
+% optional_trigger_volume
+%     0 for triggering on each volume typed above. 1 for triggering on each volume. 2 for triggering on random volume. (1 and 2 override above settings)
+% simulation
+%     False for synchronization mode. True for simulation mode.
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % Serial setup 
 
 % Trigger on slice: 1
 % Trigger on volume: Each
 % TR=2000
-%%%%%%%%%%%%%Volumes=320 --
+% Volumes=256
 % Slices=35
 % Pulse=50ms
 % start laptop 1º, dps ent start na syncbox
 
-% volumes = 256;
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 try
     s=serialport('COM3', 57600); %The stimbox works at 57600 s/s
@@ -101,9 +124,9 @@ catch
     disp('No serial port communication')
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 %% Set up stimuli lists and results file -> IMAGES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Get the image files for the experiment
 imageFolder1 = fullfile(stim_path,'active_stimuli');
@@ -156,12 +179,8 @@ else
     showTextItem = 0;
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-%% Other info
-% Get the Psychtoolbox version
-PsychtoolboxVersion
-
-%% Get time
-start_exp=GetSecs;
+PsychtoolboxVersion % Get the Psychtoolbox version
+start_exp=GetSecs; % Get time
 
