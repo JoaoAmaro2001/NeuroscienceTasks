@@ -1,15 +1,14 @@
 %% Directories (Lenovo)
-cd('C:\Users\SpikeUrban\Documents\JoaoRepo\WorkRepo\WorkRepo');
+cd('C:\git\JoaoAmaro2001\psychiatry-study');
 orip = pwd; % The root directory for scripts and images
 % root = 'C:\toolbox\Psychtoolbox';
 % addpath(genpath(root));
 % cd(root);
 % SetupPyschtoolbox % -> For troubleshooting
-main_path = fullfile(orip,'Psychiatry_fMRI');
-addpath(genpath(main_path));
-stim_path = fullfile(main_path,'stimuli');
-results_path = fullfile(main_path,'results');
-resting_state_path = fullfile(main_path,'resting_state');
+addpath(genpath(orip));
+stim_path = fullfile(orip,'stimuli');
+results_path = fullfile(orip,'results');
+resting_state_path = fullfile(orip,'resting_state');
 
 %% TR
 
