@@ -9,8 +9,8 @@ settings_2step; % Load all the settings from the file
 trial_=1; % In this case -> 1 trial being a blank image
 nTrials=1; % 6 mins = 8sec*45 trials
 n=nTrials;
-BlankTime_=zeros(1,n); %blank time; similar to Diego
-% FixTime=zeros(1,n); %fixation time; similar to Diego
+BlankTime_=zeros(1,n); % blank time; similar to Diego
+FixTime=zeros(1,n); % fixation time; similar to Diego
 Trigger=zeros(1,n); % time of trigger - 1st stage presentation??
 
 % Initialize states and variables
@@ -27,25 +27,28 @@ Screen('Flip',window1);
 
 %% Conduct experiment
 
-flag_first=1;
-% Wait for MRI trigger
-flush(s)
-while 1
-    aux = []
-    aux = read(s,1,'uint8') % Reads one sample
+flag_first = 1;
+flush(s) % Flush the serial port buffer (clean data from the port)
+while 1 
+
+    aux = [] % Wait for MRI trigger. Gives [] until the trigger is received
+    aux = read(s,1,'uint8') % Reads one sample (100 is the ascii code for 'd' in this case)
     
-    if (trial_==n) || (~isempty(aux) && (aux==115) )
-        if (trial_==n)
+    if (trial_==n) || (~isempty(aux) && (aux==115)) % 115 is the ASCII code for 's'
+        
+        if (trial_==n) 
             break
         end
-        if aux==115
-            nt=nt+1
+
+        if aux == 115
+            nt = nt+1
         end
-        
+
         if flag_first
+
             % 1. Blank screen & Cross
             Screen(window1, 'FillRect', backgroundColor);
-            BlankTime=Screen('Flip', window1);
+            BlankTime = Screen('Flip', window1); % Timestamp for the blank screen
             disp('Estado: Blank / Cross')
             if trial_ ==1
                 TriggerStart=BlankTime;
@@ -54,6 +57,7 @@ while 1
             BlankTime_(trial_)=BlankTime-TriggerStart;
 %             FixTime(trial_)=tFixation-TriggerStart;
             Trigger(trial_)=TriggerStart;
+
         end
         aux=[];
         trial_=trial_+1;

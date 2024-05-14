@@ -1,32 +1,18 @@
 % function 2step_task(subID)
-%% 2step task experiment template
-%
+
+% 2step task experiment template
 % To run, call this function with the id code for your subject, eg:
 % 2step_task('ke1');
 %
 % See instructions file for more detailed instructions.
-%
-% image = 3 sec
-% Preference 2 sec;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Load Settings and initialize EEG
+%-------------------------------------------------------------------------------
+
 
 clear, clc
-
 subID = input('subID:','s');
-
 nTotalimages = 32; % Number of stimuli in the task
-
 settings_2step; % Load all the settings from the file
-
-% nm_ny=mod(subID,2); %if 1, NM first. if 0, NY first. Even IDs get assigned 0, Odd get assigned 1.
-% if nm_ny==0
-%     vv=[imageList(nTotalimages+1:2*nTotalimages),imageList(1:nTotalimages)]
-%     imageList=vv
-% end
-
-% imageList=
 
 %% Run experiment
 trial_=1;
@@ -135,9 +121,9 @@ second_state=[];
 flush(s)
 while 1
     aux = []
-tic
-aux = read(s,1,'uint8') %Reads one sample
-toc
+    tic
+    aux = read(s,1,'uint8') % Reads one sample
+    toc
     if (trial_==n && state==13) || (~isempty(aux) && (aux==115) ) || (time_to_vote==1) 
         varstr='yes'
         if (state==13)
@@ -149,12 +135,11 @@ toc
             flag_=1;
         end
     
-    switch(state)
+    switch state
         case 1
             % 1. Blank screen & Cross
             Screen(window1, 'FillRect', backgroundColor);
             BlankTime=Screen('Flip', window1);
-            %             NetStation('Event', 'blank');
             disp('Estado: Blank / Cross')
             disp(nt)
             if trial_ ==1
@@ -162,8 +147,6 @@ toc
             end
             
             % Cross
-            t=trial_; %randomizedTrials(trial_);
-            fixationDuration1=fixationDuration(t); %Randomized order in to the ntrial poisson distribution vector
             imread(fullfile(stim_path,'crosses','crosses_00002.png')); % Load the image
             texture = Screen('MakeTexture', window1, img); % Make a texture from the image
             Screen('DrawTexture', window1, texture); % Draw the texture to the screen

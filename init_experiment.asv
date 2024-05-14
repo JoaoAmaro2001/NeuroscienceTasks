@@ -16,11 +16,6 @@ resting_state_path = fullfile(orip,'resting_state');
 % cd(root);
 % SetupPyschtoolbox % -> For troubleshooting
 
-% -------------------------------------------------------------------------
-%                               Devices
-% -------------------------------------------------------------------------
-
-devices = PsychHID('Devices'); % Get a list of all human-interface devices (HID) 
 
 %% Prelims
 settings_2step;
@@ -32,12 +27,5 @@ training;
 %% Paradigm
 eyes_closed;
 run_images_task;
-
-c.data1 = 'new value'; % Modify some data
-c.data2 = 123;
-
-modifiedKeys = flush(c); % Write the changes to the persistence service
-
-disp(modifiedKeys); % Display the keys that have been modified
 
 

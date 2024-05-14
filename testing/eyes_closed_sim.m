@@ -7,45 +7,53 @@ settings_2step; % Load all the settings from the file
 
 %% Run experiment
 trial_=1; % In this case -> 1 trial being a blank image
-nTrials=45; % 6 mins = 8sec*45 trials
+nTrials=1; % 6 mins = 8sec*45 trials
 n=nTrials;
-BlankTime_=zeros(1,n); %blank time; similar to Diego
-% FixTime=zeros(1,n); %fixation time; similar to Diego
+BlankTime_=zeros(1,n); % blank time; similar to Diego
+FixTime=zeros(1,n); % fixation time; similar to Diego
 Trigger=zeros(1,n); % time of trigger - 1st stage presentation??
 
 % Initialize states and variables
-state=1;
+% state=1;
 nt=0; %1st trigger
 
 
 Priority(MaxPriority(window1)); % Give priority of resources to experiment
 % Priority(2); % Testing lower priority
 
-% Screen('TextSize', window1, 50);
-% Screen('DrawText',window1,'A experiência começará em breve', (W/3), (H/2), textColor);
+Screen('TextSize', window1, 50);
+Screen('DrawText',window1,'A experiência começará em breve', (W/3), (H/2), textColor);
 Screen('Flip',window1);
 
 %% Conduct experiment
 
-flag_first=1;
-% Wait for MRI trigger
-flush(s)
-while 1
-    aux = []
-    aux = read(s,1,'uint8') % Reads one sample
+flag_first = 1;
+%% Conduct experiment
+
+flag_first = 1;
+while 1 
+
+    aux = []; % Wait for MRI trigger. Gives [] until the trigger is received
+    [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
     
-    if (trial_==n) || (~isempty(aux) && (aux==115) )
-        if (trial_==n)
+    if keyIsDown
+        aux = find(keyCode); % Get the key code of the pressed key
+    end
+    
+    if (trial_==n) || (~isempty(aux) && (aux==KbName('s'))) % 's' is the trigger
+        
+        if (trial_==n) 
             break
         end
-        if aux==115
-            nt=nt+1
+
+        if aux == KbName('s')
+            nt = nt+1
         end
-        
+
         if flag_first
             % 1. Blank screen & Cross
             Screen(window1, 'FillRect', backgroundColor);
-            BlankTime=Screen('Flip', window1);
+            BlankTime = Screen('Flip', window1); % Timestamp for the blank screen
             disp('Estado: Blank / Cross')
             if trial_ ==1
                 TriggerStart=BlankTime;
