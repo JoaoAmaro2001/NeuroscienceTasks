@@ -11,6 +11,9 @@ settings_2step; % Load all the settings from the file
 % Task information
 trial_      = 0;            % Start at 0 because each trial is a full volume
 n           = 180;          % 6 mins(6*60secs)/TR -> number of trials
+BlankTime_  = zeros(1,n);   % blank time; similar to Diego
+FixTime     = zeros(1,n);   % fixation time; similar to Diego
+Trigger     = zeros(1,n);   % time of trigger - 1st stage presentation??
 ns          = 0;            % refers to slice signals
 
 % Pyschtoolblox info
@@ -36,11 +39,10 @@ while 1
     if (trial_ == n) || (~isempty(aux) && (aux==115)) % 115 is the ASCII code for 's' -> full volume
         
         if (trial_ == n) 
-            finish = GetSecs;
             break
         end
 
-        trial_ = trial_ + 1; % Update trial count
+        trial_ = trial_+1;
 
         if flag_first
 
@@ -48,24 +50,27 @@ while 1
             Screen(window1, 'FillRect', backgroundColor);
             BlankTime = Screen('Flip', window1); % Timestamp for the blank screen
             disp('Estado: Blank / Cross')
-            if trial_ == 1
-                beg = GetSecs;
+            if trial_ == 0
+                TriggerStart=BlankTime;
             end
-            flag_first = 0;
-            
+            flag_first=0;
+            BlankTime_(trial_)=BlankTime-TriggerStart;
+            FixTime(trial_)=tFixation-TriggerStart;
+            Trigger(trial_)=TriggerStart;
+
         end
+        aux=[];
+        trial_=trial_+1;
     end
 end
 
 sca; % sca -- Execute Screen('CloseAll');
 
-fprintf('Tempo total: %f seconds\n', finish-beg)
-
 % Save information is excel spreadsheet
-name_file       =       [results_path '\eyes_closed_' num2str(subID) '.xlsx'];
-M               =       [BlankTime_', Trigger'];
-T               =       [array2table(M)];
-T.Properties.VariableNames = {'BlankTime_','Trigger'};
+name_file=[results_path '\eyes_closed_' num2str(subID) '.xlsx'];
+M = [BlankTime_', Trigger']
+T = [array2table(M)]
+T.Properties.VariableNames = {'BlankTime_','Trigger'}
 writetable(T,name_file)
 
 % end

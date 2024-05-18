@@ -166,5 +166,5 @@ end
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 PsychtoolboxVersion % Get the Psychtoolbox version
-start_exp=GetSecs; % Get time
+start_exp = GetSecs; % Get time
 

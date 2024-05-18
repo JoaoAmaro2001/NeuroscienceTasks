@@ -884,24 +884,19 @@ while 1
     end
 end
 
+end_exp = GetSecs;
+fprintf('Tempo total: %f seconds\n', end_exp-start_exp) % Total time of the experiment
 
-%% End
-resultsFolder = 'results';
-name_file=[resultsFolder '/resultfile_' num2str(subID) '.xlsx']
-
-% nm_ny_array=repmat(nm_ny,1,nTrials)
+% Save results in excel file
+name_file = [results_path '/resultfile_' num2str(subID) '.xlsx'];
 
 movienames_trials
-
 M=[BlankTime_', FixTime', image1Time', SelectValenceTime', SelectArousalTime', SelectFamiliarityTime', ...
     rtValence', rtArousal', rtFamiliarity', choiceValence', choiceArousal', choiceFamiliarity', Trigger']
 T = [array2table(M), cell2table(image_name_trial')]
 T.Properties.VariableNames = {'BlankTime_','FixTime','image1Time','SelectValenceTime','SelectArousalTime',...
     'SelectFamiliarityTime','rtValence','rtArousal','rtFamiliarity','choiceValence','choiceArousal','choiceFamiliarity','Trigger','image_name_trial'}
 writetable(T,name_file)
-
 sca;
 
-%360 volumes total
-% now will be 460??
-% actually 440
+% end

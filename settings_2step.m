@@ -111,10 +111,10 @@ timeBetweenTrials = 1;
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 try
-    s=serialport('COM3', 57600); %The stimbox works at 57600 s/s
+    s = serialport('COM3', 57600); %The stimbox works at 57600 s/s
     % s=serialport('COM6', 57600); %The stimbox works at 57600 s/s
     % s.Timeout=trialTimeout-ImageDuration; %Max wait time for user input
-    s.Timeout=TR; % Max wait time for user input
+    s.Timeout = TR; % Max wait time for user input
     disp("It's ok")
 catch
     s=[];
@@ -178,6 +178,6 @@ end
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-PsychtoolboxVersion % Get the Psychtoolbox version
-start_exp=GetSecs; % Get time
+PsychtoolboxVersion     % Get the Psychtoolbox version
+start_exp = GetSecs;    % Get time
 

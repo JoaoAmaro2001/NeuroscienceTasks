@@ -3,11 +3,11 @@
 
 clear, clc
 subID = input('subID:','s');
-settings_2step; % Load all the settings from the file
+settings_2step_sim; % Load all the settings from the file
 
 %% Run experiment
 trial_=1; % In this case -> 1 trial being a blank image
-nTrials=1; % 6 mins = 8sec*45 trials
+nTrials=45; % 6 mins = 8sec*45 trials
 n=nTrials;
 BlankTime_=zeros(1,n); % blank time; similar to Diego
 FixTime=zeros(1,n); % fixation time; similar to Diego
@@ -28,24 +28,36 @@ Screen('Flip',window1);
 %% Conduct experiment
 
 flag_first = 1;
-%% Conduct experiment
+tStart = []; % Initialize start time
+tWaitStart = GetSecs; % Initialize wait start time
 
-flag_first = 1;
 while 1 
 
     aux = []; % Wait for MRI trigger. Gives [] until the trigger is received
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
     
     if keyIsDown
-        aux = find(keyCode); % Get the key code of the pressed key
+        aux = 115; % Get the key code of the pressed key
+        if isempty(tStart) % Start the timer when the key is first pressed
+            tStart = GetSecs;
+        end
     end
     
-    if (trial_==n) || (~isempty(aux) && (aux==KbName('s'))) % 's' is the trigger
+    if ~isempty(tStart) && GetSecs - tStart >= 2 % Send the signal every 2 seconds
+        aux = 115; % Set aux to 115 to represent the signal
+        tStart = GetSecs; % Reset the start time
+    end
+    
+    if GetSecs - tWaitStart >= TR % If wait time exceeds TR, continue to the next iteration
+        continue;
+    end
+    
+    if (trial_==n) || (~isempty(aux) && (aux==115)) % 's' is the trigger
         
         if (trial_==n) 
             break
         end
-
+        
         if aux == KbName('s')
             nt = nt+1
         end
@@ -71,8 +83,7 @@ end
 sca; % sca -- Execute Screen('CloseAll');
 
 %% End
-resultsPath = fullfile(main_path,'results');
-name_file=[resultsPath '\eyes_closed_' num2str(subID) '.xlsx'];
+name_file=[results_path '\eyes_closed_' num2str(subID) '.xlsx'];
 
 M = [BlankTime_', Trigger']
 T = [array2table(M)]
