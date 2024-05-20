@@ -11,61 +11,10 @@
 
 clear, clc
 subID = input('subID:','s');
-nTotalimages = 32; % Number of stimuli in the task
 settings_2step; % Load all the settings from the file
 
-%% Run experiment
-trial_=1;
-score_=0;
-flag_vote_state4=0;
-t=trial_;
-n=nTrials;
-BlankTime_=zeros(1,n); %blank time; similar to Diego
-FixTime=zeros(1,n); %fixation time; similar to Diego
-image1Time=zeros(1,n); %time to present image (start of image)
+% Run experiment
 
-image_name_trial=cell(1,n); %list of movienames presented at each trial
-
-SelectValenceTime=zeros(1,n); %selection time for valence (start)
-SelectArousalTime=zeros(1,n); %selection time for arousal (start)
-SelectFamiliarityTime=zeros(1,n); %selection time for familiarity (start)
-
-rtValence=zeros(1,n); % reaction times for valence selection
-rtArousal=zeros(1,n); % reaction times for arousal selection
-rtFamiliarity=zeros(1,n); % reaction times for familiarity selection
-
-choiceValence=zeros(1,n); % choice for valence
-choiceArousal=zeros(1,n); % choice for arousal
-choiceFamiliarity=zeros(1,n); % choice for familiarity
-
-Trigger=zeros(1,n); % time of trigger - 1st stage presentation??
-textString_=cell(1,n); % quality of trial - label to save in .txt
-
-movienames_trials=cell(1,n)
-file_=cell(1,n); %image file ??
-
-% Initialize states and variables
-state=1;
-choice_=0;
-nt=0; %1st trigger
-
-%Flags
-flag_=1;
-time_to_vote=0;
-flag_vote_valence=0;
-flag_vote_arousal=0;
-flag_vote_familiarity=0;
-
-% MaxPriority(window1)
-% Priority(MaxPriority(window1));
-Priority(MaxPriority(window1));
-Priority(2);
-
-Screen('TextSize', window1, 50);
-Screen('DrawText',window1,'A experiência começará em breve', (W/3), (H/2), textColor);
-Screen('Flip',window1);
-
-second_state=[];
 
 % % % %% Code to present images
 % % %
@@ -114,6 +63,23 @@ second_state=[];
 % % %  imageTime=Screen('Flip', window1);
 % % %
 % % % sca;
+
+
+
+
+% -------------------------------------------------------------------------
+%                           State Information:
+%                               
+% 0. Blank screen
+% 1. Blank screen & Cross
+% 2. Load active stimulus
+% 3. Load active stimulus response
+% 4. Load neutral stimulus
+% 5. Load neutral stimulus response
+% -------------------------------------------------------------------------
+
+
+state = 1;
 
 %% Conduct experiment
 

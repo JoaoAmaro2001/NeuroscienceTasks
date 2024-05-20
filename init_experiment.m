@@ -10,7 +10,7 @@ stim_path = fullfile(orip,'stimuli');
 results_path = fullfile(orip,'results');
 
 % -------------------------------------------------------------------------
-%                           Troubleshooting
+%                     Troubleshooting Psychtoolbox
 % -------------------------------------------------------------------------
 
 % root = 'C:\toolbox\Psychtoolbox';

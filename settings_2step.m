@@ -1,4 +1,6 @@
-%% Directories (Lenovo)
+clear, clc, close all
+
+% Directories (Lenovo)
 cd('C:\git\JoaoAmaro2001\psychiatry-study');
 orip = pwd; % The root directory for scripts and images
 addpath(genpath(orip));
@@ -6,19 +8,12 @@ stim_path = fullfile(orip,'stimuli');
 results_path = fullfile(orip,'results');
 resting_state_path = fullfile(orip,'resting_state');
 
-%% TR
-
-% clear all
-% close all
+% Init
 TR = 2; % one cycle = 2 seconds
-% trialTimeout=2*TR*0.95;
-
-%% Keyboard and serial mode opt 0 ='off' 1='on'
 kb_opt = 0; 
 s_opt = 1;
 
 %% Screen setup 
-
 backgroundColor = 255; % Background color: choose a number from 0 (black) to 255 (white)
 textColor = 0; % Text color: choose a number from 0 (black) to 255 (white)
 clear screen
@@ -59,13 +54,11 @@ textFile = 'none';
 
 %% Time Trial settings 
 
-% How long to the subject watches the image
-ImageDuration=TR*4; % Total duration of the image on the screen = 8 seconds
-
-% Number of trials to show before a break (for no breaks, choose a number
+% Total duration of the image on the screen = 8 seconds
+ImageDuration=TR*4; 
+% Number of trials to show before a break
+breakAfterTrials = 100000; % (for no breaks, choose a number
 % greater than the number of trials in your experiment)
-breakAfterTrials = 100000;
-
 % Image format of the image files in this experiment (eg, jpg, gif, png, bmp)
 imageFormat = 'png';
 
@@ -113,7 +106,6 @@ timeBetweenTrials = 1;
 try
     s = serialport('COM3', 57600); %The stimbox works at 57600 s/s
     % s=serialport('COM6', 57600); %The stimbox works at 57600 s/s
-    % s.Timeout=trialTimeout-ImageDuration; %Max wait time for user input
     s.Timeout = TR; % Max wait time for user input
     disp("It's ok")
 catch
@@ -130,43 +122,11 @@ imageFolder1 = fullfile(stim_path,'active_stimuli');
 imageFolder2 = fullfile(stim_path,'neutral_stimuli');
 imageList_act = dir(fullfile(imageFolder1,['*.' imageFormat]));
 imageList_neu = dir(fullfile(imageFolder2,['*.' imageFormat]));
-% % 
-% % lambda_poisson = 0.5;
-% % x = poissrnd(lambda_poisson,[1 nTrials])
-% 
-% min_secs=0.5;
-% max_secs=1.5; %TR
-% fixationDuration = min_secs + (max_secs-min_secs)*rand(1,nTrials);
-
-% x=zeros(1,nTrials);
-% for i=1:nTrials
-%     x(i)=poissrnd(1);
-% end
-% fixationDuration=(x/(max(x)-min(x)))+(TR-1); %Fitting distribution into [TR-1,TR+1] interval
-% fixationDuration=(x/(max(x)-min(x))); %Fitting distribution into [0,1] interval
-% fixationDuration=3/2*TR-fixationDuration; %Fitting distribution into [3/2*TR-1,3/2TR] interval poisson to the right direction TR=2 ==> [2,3]
-
-% fixationDuration = TR*x;
-
-%% Score images
 
 % Get Score Images
 imageFolder_score = fullfile(stim_path,'stars');
 imgList_score = dir(fullfile(imageFolder_score,['*.' 'png']));
 imgList_score = {imgList_score(:).name}; % 0 - 5 and 6th image is the start
-
-
-% %Load score image
-% for k=1:length(imgList_score)
-%     file = imgList_score{k}; 
-%     m_score(:,:,:,k) = imread(fullfile(imageFolder_score,file));
-% end
-% img_score=m_score;
-% % img_score=m_score(:,:,:,7:end); %Score images
-% % img_score_conf=m_score(:,:,:,1:6); %Conf score images
-% imageSize = size(squeeze(img_score(:,:,:,end))); %Start scoring is the last one
-% pos_score = [(W-imageSize(2))/2 (H-imageSize(1))/2 (W+imageSize(2))/2 (H+imageSize(1))/2];
-
 
 % Load the text file (optional)
 if strcmp(textFile,'none') == 0
