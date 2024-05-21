@@ -78,8 +78,13 @@ end
 %                         Setup the joysticks
 % -------------------------------------------------------------------------
 
-
-
+KbName('UnifyKeyNames') % Unify key names
+hotkey          = KbName('LeftControl'); % Simulates MRI trigger for TR
+terminateKey    = KbName('ESCAPE');      % Key code for escape key
+resp1           = KbName('1!');          % Key code for response 1
+resp2           = KbName('2@');          % Key code for response 2
+resp3           = KbName('3#');          % Key code for response 3
+resp4           = KbName('4$');          % Key code for response 4
 
 %% Set up stimuli lists and results file -> IMAGES
 

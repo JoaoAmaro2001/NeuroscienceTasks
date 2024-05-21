@@ -1,6 +1,4 @@
-clear, clc, close all
-subID = input('subID:','s');
-settings_2step; % Load all the settings from the file
+settings_training; % Load all the settings from the file
 
 % -------------------------------------------------------------------------
 %                           State Information:
@@ -38,13 +36,37 @@ Screen('TextSize', window1, 50);
 Screen('DrawText',window1,'A experiência começará em breve', (W/3), (H/2), textColor);
 Screen('Flip',window1);
 
+
+prevDigit = -1;  % Initialize prevDigit to a value that firstDigit will never be
+tic;
+while 1
+    % Get the first digit of timetmp
+    timetmp = toc;
+    firstDigit = str2double(num2str(floor(timetmp)));
+    % Check if the first digit is an even number and different from the previous one
+    if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit
+        aux = 115
+    else
+        aux = [];
+    end
+    prevDigit = firstDigit; % Update prevDigit
+end
+
 % Start Experiment
+prevDigit = -1;  % Initialize prevDigit to a value that firstDigit will never be
+tic;
 while 1
 
-    % SERIAL PORT CONTROL
-    aux = []
-    flush(s)
-    aux = read(s,1,'uint8') % Reads one sample
+    % SIMULATING SERIAL PORT COMMUNICATION
+    timetmp = toc;
+    firstDigit = str2double(num2str(floor(timetmp)));
+    % Check if the first digit is an even number and different from the previous one
+    if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit
+        aux = 115
+    else
+        aux = [];
+    end
+    prevDigit = firstDigit; % Update prevDigit
 
     % BUTTON CHECK CONTROL CONTROL (FINISH!)
     if (state == 2 || state == 3) && flag_resp
@@ -54,7 +76,7 @@ while 1
             rt                      = rt_end - rt_beg;
             rt_num(trial_num)       = rt;
             res_num(trial_num)      = []; % Fill
-            res_txt(trial_num)     = ""; % Fill
+            res_text(trial_num)     = ""; % Fill
             key = find(keyCode);          % Find the index of the pressed key
             if key == yourButtonIndex     % You have to setup the keys first (make elifs for each key -> there are 4)
                 addResponseOptions(windowPtr, responseOptions)
@@ -201,4 +223,3 @@ fprintf('Tempo total: %f seconds\n', end_exp-start_exp) % Total time of the expe
 name_file = [results_path '/resultfile_' num2str(subID) '.xlsx'];
 T = table(trial',stim_txt',res_txt',res_num',rt_num',cond','VariableNames',{'Trial','Stimulus','Response', 'ResponseIndex','ReactionTime','Condition'});
 writetable(T,name_file)
-

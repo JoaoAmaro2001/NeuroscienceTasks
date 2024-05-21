@@ -43,14 +43,6 @@ Screen('FillRect',window1, backgroundColor); % Fills the screen with the backgro
 Screen('Flip', window1); % Updates the screen (flip the offscreen buffer to the screen)
 
 
-ImageDuration=TR*4; % Total duration of the image on the screen = 8 seconds
-breakAfterTrials = 100000;
-imageFormat = 'png';
-% How long to pause in between trials (if 0, the experiment will wait for
-% the subject to press a key before every trial)
-timeBetweenTrials = 1;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Setting the serial communication
 
