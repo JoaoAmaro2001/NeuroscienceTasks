@@ -173,7 +173,7 @@ while 1
                 tr_N = tr_N + 1;
                 tr_n = tr_n + 1;
                 if flag_screen
-                    drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+                    drawText(window1, textActiveStimuli, trial_num, W, H, backgroundColor, textColor)
                     addResponseOptions(window1, responseOptions, boldOption)
                     rt_beg = GetSecs;
                     flag_screen = 0;
@@ -235,7 +235,7 @@ while 1
                     flag_resp   = 1;
                 end
                 if flag_screen
-                    drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)     
+                    drawText(window1, textNeutralStimuli, trial_num, W, H, backgroundColor, textColor)     
                     addResponseOptions(window1, responseOptions, boldOption)
                     rt_beg = GetSecs;
                     flag_screen = 0;

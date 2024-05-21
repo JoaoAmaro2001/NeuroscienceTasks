@@ -169,7 +169,7 @@ while 1
 
             case 2
                 % 2. Load active stimulus
-                fprintf('Estado: Bloco ativo e frase nº%d\n', trial_num)
+                fprintf('Estado: Bloco de treino e frase nº%d\n', trial_num)
                 tr_trigger = tr_trigger + 1;
                 tr_N = tr_N + 1;
                 tr_n = tr_n + 1;
@@ -209,7 +209,7 @@ while 1
                 
             case 3
                 % 3. Load neutral stimulus
-                fprintf('Estado: Bloco neutro e frase nº%d\n', trial_num)
+                fprintf('Estado: Bloco de treino e frase nº%d\n', trial_num)
                 tr_trigger = tr_trigger + 1;
                 tr_N = tr_N + 1;
                 tr_n = tr_n + 1;
