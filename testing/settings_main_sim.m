@@ -18,15 +18,15 @@ Screen('Preference', 'SkipSyncTests', 1); % Is this safe?
 Screen('Preference','VisualDebugLevel', 0); % Minimum amount of diagnostic output
 % -------------------------------------------------------------------------
 %                             1 SCREEN
-% ------------------------------------------------------------------------- 
-whichScreenMin = min(Screen('Screens')); % Get the screen numbers
-[screenWidth, screenHeight] = Screen('WindowSize', whichScreenMin); % Get the screen size
-[window1, rect] = Screen('OpenWindow', whichScreenMin, backgroundColor, [0 0 screenWidth, screenHeight/2]);
+% % ------------------------------------------------------------------------- 
+% whichScreenMin = min(Screen('Screens')); % Get the screen numbers
+% [screenWidth, screenHeight] = Screen('WindowSize', whichScreenMin); % Get the screen size
+% [window1, rect] = Screen('OpenWindow', whichScreenMin, backgroundColor, [0 0 screenWidth, screenHeight/2]);
 % -------------------------------------------------------------------------
 %                             2 SCREENS
 % ------------------------------------------------------------------------- 
-% whichScreenMax = max(Screen('Screens')); % Get the screen numbers
-% [window1, rect] = Screen('Openwindow',whichScreenMax,backgroundColor,[],[],2);
+whichScreenMax = max(Screen('Screens')); % Get the screen numbers
+[window1, rect] = Screen('Openwindow',whichScreenMax,backgroundColor,[],[],2);
 % -------------------------------------------------------------------------
 %                             Continue
 % ------------------------------------------------------------------------- 

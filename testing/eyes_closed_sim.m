@@ -31,9 +31,18 @@ while 1
     end
     prevDigit = firstDigit; % Update prevDigit
 
+    % MANUAL CONTROL
+    [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
+    if keyIsDown
+        if keyCode(terminateKey) % Check if the terminate key was pressed
+            break % Exit the function or script
+        end
+        if keyCode(hotkey) % Check if the hotkey was pressed
+            aux = 115;
+        end
+    end
 
     if ~isempty(aux) && aux==115 % 115 is the ASCII code for 's'
-        
         
         tr_trigger = tr_trigger + 1;
         if tr_trigger == tr_final
