@@ -17,7 +17,8 @@ Screen('Flip',window1);
 % Start recording
 flag_cross = 1;
 while 1 
-
+    
+    tic
     aux = []
 
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
@@ -62,9 +63,12 @@ while 1
             
         end
     end
+    elapsedTime = toc; % End timer
 end
 
 sca; % sca -- Execute Screen('CloseAll');
 
+loopsPerSecond = 1 / elapsedTime;
+fprintf('Loops per second: %f \n', loopsPerSecond)
 fprintf('Tempo total: %f seconds\n', finish-beg)
 fprintf('Número de eventos "100": %f \n', slice_n)

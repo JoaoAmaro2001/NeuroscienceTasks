@@ -1,6 +1,4 @@
-% function 2step_task(subID)
-
-%% Load Settings and initialize 
+% Load Settings and initialize 
 
 clear, clc
 subID = input('subID:','s'); % Input subject ID
@@ -57,6 +55,3 @@ sca; % sca -- Execute Screen('CloseAll');
 
 fprintf('Tempo total: %f seconds\n', finish-beg)
 fprintf('Número de eventos "100": %f \n', slice_n)
-
-% end
-

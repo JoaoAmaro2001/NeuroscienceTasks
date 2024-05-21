@@ -13,62 +13,23 @@ TR = 2; % one cycle = 2 seconds
 kb_opt = 0; 
 s_opt = 1;
 
-%% Screen setup 
+% Screen setup 
 backgroundColor = 255; % Background color: choose a number from 0 (black) to 255 (white)
 textColor = 0; % Text color: choose a number from 0 (black) to 255 (white)
 clear screen
 Screen('Preference', 'SkipSyncTests', 1); % Is this safe?
 Screen('Preference','VisualDebugLevel', 0); % Minimum amount of diagnostic output
 whichScreen = max(Screen('Screens')); % Get the screen numbers
-[window1, rect] = Screen('OpenWindow', whichScreen, backgroundColor, [0 0 600 300]); % For testing purposes with 1 screen only
-% [window1, rect] = Screen('Openwindow',whichScreen,backgroundColor,[],[],2); % Use with 2 screens
-slack = Screen('GetFlipInterval', window1)/2; %The flip interval is half of the monitor refresh rate; why is it here?
-W=rect(RectRight); % screen width
-H=rect(RectBottom); % screen height
+[window1, rect] = Screen('Openwindow',whichScreen,backgroundColor,[],[],2); % Use with 2 screens
+slack = Screen('GetFlipInterval', window1)/2; % The flip interval is half of the monitor refresh rate; why is it here?
+W = rect(RectRight); % screen width
+H = rect(RectBottom); % screen height
 Screen('FillRect',window1, backgroundColor); % Fills the screen with the background color
 Screen('Flip', window1); % Updates the screen (flip the offscreen buffer to the screen)
 
-
-%% Keyboard settings
-
-% Path to text file input (optional; for no text input set to 'none')
-% textFile = 'searchPrompt.txt';
-textFile = 'none';
-
-% Response keys (optional; for no subject response use empty list)
-% responseKeys = {'y','n', '0)', '1!', '2@', '3#', '4$', '5%', '6^', '7&', '8*','9(','LeftArrow','RightArrow','UpArrow','DownArrow'};
-% responseKeys = {};
-% left - 37
-% right - 39
-% up - 38
-% down - 40
-
-% % Keyboard setup
-% KbName('UnifyKeyNames');
-% KbCheckList = [KbName('space'),KbName('ESCAPE'), KbName('0)'), KbName('1!'), KbName('2@'), KbName('3#'), KbName('4$'),  KbName('5%'),  KbName('6^'),  KbName('7&'),  KbName('8*'),  KbName('9('), KbName('LeftArrow'),KbName('RightArrow'),KbName('UpArrow'),KbName('DownArrow')];
-% for i = 1:length(responseKeys)
-%     KbCheckList = [KbName(responseKeys{i}),KbCheckList];
-% end
-% RestrictKeysForKbCheck(KbCheckList);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Time Trial settings 
-
-% Total duration of the image on the screen = 8 seconds
-ImageDuration=TR*4; 
-% Number of trials to show before a break
-breakAfterTrials = 100000; % (for no breaks, choose a number
-% greater than the number of trials in your experiment)
-% Image format of the image files in this experiment (eg, jpg, gif, png, bmp)
-imageFormat = 'png';
-
-% How long to pause in between trials (if 0, the experiment will wait for
-% the subject to press a key before every trial)
-timeBetweenTrials = 1;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Setting the serial communication
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % Information
+% -------------------------------------------------------------------------
+%                       Setting the serial communication  
+% -------------------------------------------------------------------------
 
 % Parameters
 % -------
@@ -91,53 +52,100 @@ timeBetweenTrials = 1;
 % simulation
 %     False for synchronization mode. True for simulation mode.
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % Serial setup 
-
-% Trigger on slice: 1
-% Trigger on volume: Each
-% TR=2000
-% Volumes=256
-% Slices=35
-% Pulse=50ms
-% start laptop 1º, dps ent start na syncbox
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-
 try
     s = serialport('COM3', 57600); %The stimbox works at 57600 s/s
     % s=serialport('COM6', 57600); %The stimbox works at 57600 s/s
     s.Timeout = TR; % Max wait time for user input
-    disp("It's ok")
+    disp("Serial port communication is set.")
 catch
-    s=[];
-    disp('No serial port communication')
+    s = [];
+    disp('No serial port communication.')
 end
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% -------------------------------------------------------------------------
+%                         Settings on StimBox
+% -------------------------------------------------------------------------
+
+% Trigger on slice: 1
+% Trigger on volume: Each
+% TR            =   2000
+% Volumes       =   261 (+ 180 -> eyes closed)
+% Slices        =   35
+% Pulse         =   50 ms
+% start laptop 1º, dps ent start na syncbox
+
+% -------------------------------------------------------------------------
+%                         Setup the joysticks
+% -------------------------------------------------------------------------
+
+
+
 
 %% Set up stimuli lists and results file -> IMAGES
 
 % Get the image files for the experiment
+imageFormat = 'png';
 imageFolder1 = fullfile(stim_path,'active_stimuli');
 imageFolder2 = fullfile(stim_path,'neutral_stimuli');
 imageList_act = dir(fullfile(imageFolder1,['*.' imageFormat]));
 imageList_neu = dir(fullfile(imageFolder2,['*.' imageFormat]));
 
-% Get Score Images
-imageFolder_score = fullfile(stim_path,'stars');
-imgList_score = dir(fullfile(imageFolder_score,['*.' 'png']));
-imgList_score = {imgList_score(:).name}; % 0 - 5 and 6th image is the start
+% % Get Score Images
+% imageFolder_score = fullfile(stim_path,'stars');
+% imgList_score = dir(fullfile(imageFolder_score,['*.' 'png']));
+% imgList_score = {imgList_score(:).name}; % 0 - 5 and 6th image is the start
 
-% Load the text file (optional)
-if strcmp(textFile,'none') == 0
-    showTextItem = 1;
-    textItems = importdata(textFile);
-else
-    showTextItem = 0;
-end
+
+% Generate text stimuli and response options for Psychtoolbox
+
+cond_text = {'active','neutral'};
+
+textActiveStimuli = {
+    "Gosto de todo o tipo de jogos e passatempos."
+    "Sou mais sensível à crítica do que era antes."
+    "Ultimamente tenho me sentido muito ansioso(a) e receoso(a)."
+    "Choro facilmente."
+    "Tenho medo de perder a minha sanidade mental."
+    "Sinto-me melancólico(a) e deprimido(a)."
+    "Não consigo compreender tão bem o que leio como costumava."
+    "Gostaria de pôr termo à minha vida."
+    "De manhã sinto-me particularmente mal."
+    "Já não tenho uma relação próxima com outras pessoas."
+    "Sinto que estou prestes a desmoronar."
+    "Tenho constantemente medo de dizer ou fazer algo errado."
+    "Atualmente estou muito menos interessado(a) na minha vida amorosa do que anteriormente."
+    "Muitas vezes sinto-me simplesmente miserável."
+    "Por mais que tente, não consigo pensar com clareza."
+    "Já não tenho qualquer sentimento."
+};
+
+textNeutralStimuli = {
+    "Gosto de construir armários de cozinha."
+    "Gosto de assentar tijolos ou azulejos."
+    "Gostava de desenvolver um medicamento novo."
+    "Gosto de estudar maneiras de reduzir a poluição da água."
+    "Gosto de escrever livros ou peças de teatro."
+    "Gosto de tocar um instrumento musical."
+    "Gosto de ensinar a alguém uma rotina de exercícios."
+    "Gosto de ajudar pessoas com problemas pessoais ou emocionais."
+    "Gosto de comprar e vender ações e obrigações financeiras."
+    "Gosto de gerir uma loja."
+    "Gosto de desenvolver uma folha de cálculo usando software de computador."
+    "Gosto de fazer a revisão de registos ou formulários."
+    "Gosto de reparar eletrodomésticos."
+    "Gosto de criar peixes."
+    "Gosto de realizar experiências químicas."
+    "Gosto de estudar o movimento dos planetas."
+};
+
+responseOptions = {
+    "Completamente Verdadeiro"
+    "Maioritariamente Verdadeiro"
+    "Parcialmente Verdadeiro"
+    "Falso"
+};
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 PsychtoolboxVersion     % Get the Psychtoolbox version
-start_exp = GetSecs;    % Get time
 
