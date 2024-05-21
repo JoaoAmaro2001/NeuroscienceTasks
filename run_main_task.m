@@ -1,6 +1,6 @@
-% TRAINING CONSISTS OF BLANK + 1 BLOCK + 1 CROSS -> 1 TRIAL
 clear, clc, close all
-settings_training; % Load all the settings from the file
+subID = input('subID:','s');
+settings_main; % Load all the settings from the file
 
 % -------------------------------------------------------------------------
 %                           State Information:
@@ -12,7 +12,7 @@ settings_training; % Load all the settings from the file
 % -------------------------------------------------------------------------
 
 % Init
-tr_final    = (8*4 + 8 + 10)/2;     % Number of triggers for training session
+tr_final    = (8*32 + 8*32 + 10)/2; % Number of triggers
 tr_trigger  = 0;                    % TR trigger counter (There are 261 -> ((8*32 + 8*32 + 10)/2) = 8.7 mins)
 tr_N        = 0;                    % tr counter inside loop for each block
 tr_n        = 0;                    % tr counter inside loop for each stimulus
@@ -39,22 +39,14 @@ Screen('TextSize', window1, 50);
 Screen('DrawText',window1,'A experiência começará em breve', (W/3), (H/2), textColor);
 Screen('Flip',window1);
 
-% Start Experiment
-prevDigit = -1;  % Initialize prevDigit to a value that firstDigit will never be
+% Start the experiment
 tic;
 while 1
 
-    % SIMULATING SERIAL PORT COMMUNICATION
+    % SERIAL PORT COMMUNICATION
     timetmp = toc;
-    firstDigit = str2double(num2str(floor(timetmp)));
-    if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit && firstDigit ~= 0
-        aux = 115;
-        beep
-        toc
-    else
-        aux = [];
-    end
-    prevDigit = firstDigit; % Update prevDigit
+    flush(s)
+    aux = read(s,1,'uint8'); % Reads one sample
 
     % MANUAL CONTROL
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
@@ -67,12 +59,13 @@ while 1
         end
     end
 
-    % BUTTON CHECK CONTROL CONTROL (FINISH!)
+    % BUTTON CHECK CONTROL CONTROL
     if (state == 2 || state == 3) && flag_resp
-        [keyIsDown, ~, keyCode] = KbCheck; % Ask participant to press for long?
+        [keyIsDown, ~, keyCode] = KbCheck;
         if keyIsDown && keyCode(resp1)
             boldOption              = 1;
-            addResponseOptions(windowPtr, responseOptions, boldOption)
+            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
             rt_num(trial_num)       = rt;
@@ -83,45 +76,39 @@ while 1
         end
         if keyIsDown && keyCode(resp2)
             boldOption              = 2;
+            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
             rt_num(trial_num)       = rt;
-            res_num(trial_num)      = 2;  % Fill
-            res_txt{trial_num}      = responseOptions{2}; % Fill
-            key = find(keyCode);          % Find the index of the pressed key
-            if key == yourButtonIndex     % You have to setup the keys first (make elifs for each key -> there are 4)
-                addResponseOptions(windowPtr, responseOptions, boldOption)
-            end
-            flag_resp  = 0;
-            boldOption = [];
+            res_num(trial_num)      = 2;  
+            res_txt{trial_num}      = responseOptions{2}; 
+            flag_resp               = 0;
+            boldOption              = [];
         end
         if keyIsDown && keyCode(resp3)
             boldOption              = 3;
+            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
             rt_num(trial_num)       = rt;
-            res_num(trial_num)      = 3;  % Fill
-            res_txt{trial_num}      = responseOptions{3}; % Fill
-            key = find(keyCode);          % Find the index of the pressed key
-            if key == yourButtonIndex     % You have to setup the keys first (make elifs for each key -> there are 4)
-                addResponseOptions(windowPtr, responseOptions, boldOption)
-            end
-            flag_resp  = 0;
-            boldOption = [];
+            res_num(trial_num)      = 3;  
+            res_txt{trial_num}      = responseOptions{3}; 
+            flag_resp               = 0;
+            boldOption              = [];
         end
         if keyIsDown && keyCode(resp4)
-            boldOption = 4;
+            boldOption              = 4;
+            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
             rt_num(trial_num)       = rt;
-            res_num(trial_num)      = 4;  % Fill
-            res_txt{trial_num}      = responseOptions{4}; % Fill
-            key = find(keyCode);          % Find the index of the pressed key
-            if key == yourButtonIndex     % You have to setup the keys first (make elifs for each key -> there are 4)
-                addResponseOptions(windowPtr, responseOptions, boldOption)
-            end
-            flag_resp  = 0;
-            boldOption = [];
+            res_num(trial_num)      = 4;  
+            res_txt{trial_num}      = responseOptions{4}; 
+            flag_resp               = 0;
+            boldOption              = [];
         end
     end
 
@@ -179,13 +166,7 @@ while 1
                 tr_N = tr_N + 1;
                 tr_n = tr_n + 1;
                 if flag_screen
-                    Screen('TextSize', window1, 50);
-                    text = textTraining{trial_num};
-                    [textWidth, textHeight] = RectSize(Screen('TextBounds', window1, text));
-                    xPos = (W - textWidth) / 2;
-                    yPos = (H - textHeight) / 2 - textHeight * 0.1; % Give room
-                    Screen('FillRect', window1, backgroundColor);  
-                    Screen('DrawText', window1, text, xPos, yPos, textColor);
+                    drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
                     addResponseOptions(window1, responseOptions, boldOption)
                     rt_beg = GetSecs;
                     flag_screen = 0;
@@ -247,7 +228,7 @@ while 1
                     flag_resp   = 1;
                 end
                 if flag_screen
-                    Screen('DrawText',window1,textNeutralStimuli{trial_num}, (W/3), (H/2), textColor);      
+                    drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)     
                     addResponseOptions(window1, responseOptions, boldOption)
                     rt_beg = GetSecs;
                     flag_screen = 0;
@@ -268,3 +249,4 @@ fprintf('Tempo total: %f seconds\n', end_exp-start_exp) % Total time of the expe
 name_file = [results_path '\resultfile_training.xlsx'];
 T = table(trial',stim_txt',res_txt',res_num',rt_num',cond','VariableNames',{'Trial','Stimulus','Response', 'ResponseIndex','ReactionTime','Condition'});
 writetable(T,name_file)
+

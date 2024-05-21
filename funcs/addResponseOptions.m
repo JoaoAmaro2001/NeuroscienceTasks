@@ -1,5 +1,5 @@
 
-function addResponseOptions(windowPtr, responseOptions)
+function addResponseOptions(windowPtr, responseOptions, boldOption)
     
     % Get the size of the window
     [windowWidth, windowHeight] = Screen('WindowSize', windowPtr);
@@ -12,38 +12,21 @@ function addResponseOptions(windowPtr, responseOptions)
         windowWidth * 0.75, windowHeight * 0.75   % Lower right
     ];
     
-    % Set the text size
+    % Set the text parameters
     Screen('TextSize', windowPtr, 24);
+    Screen('TextStyle', windowPtr, 0); % normal
     
     % Add the text to the screen
     for i = 1:length(responseOptions)
-        DrawFormattedText(windowPtr, responseOptions{i}, positions(i, 1), positions(i, 2), [255, 255, 255]);
+        if ~isempty(boldOption) && boldOption == i
+            Screen('TextStyle', windowPtr, 1); % bold
+            DrawFormattedText(windowPtr, responseOptions{i}, positions(i, 1), positions(i, 2), [0, 0, 0]);
+            Screen('TextStyle', windowPtr, 0); % normal
+        else
+            DrawFormattedText(windowPtr, responseOptions{i}, positions(i, 1), positions(i, 2), [0, 0, 0]);
+        end
     end
     
     % Flip the screen to show the text
     Screen('Flip', windowPtr);
-end
-
-function checkKeyPressAndDisplayBoldText(windowPtr, responseOptions, positions)
-    % Check for key press
-    [keyIsDown, ~, keyCode] = KbCheck;
-    if keyIsDown
-        % Find the index of the pressed key
-        key = find(keyCode);
-        
-        % If the key index corresponds to a response option, display the corresponding text in bold
-        if key > 0 && key <= length(responseOptions)
-            % Set the text style to bold
-            Screen('TextStyle', windowPtr, 1);
-            
-            % Draw the text
-            DrawFormattedText(windowPtr, responseOptions{key}, positions(key, 1), positions(key, 2), [255, 255, 255]);
-            
-            % Flip the screen to show the text
-            Screen('Flip', windowPtr);
-            
-            % Set the text style back to normal
-            Screen('TextStyle', windowPtr, 0);
-        end
-    end
 end

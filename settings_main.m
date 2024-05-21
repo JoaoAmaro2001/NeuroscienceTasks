@@ -24,20 +24,53 @@ H = rect(RectBottom);                           % screen height
 Screen('FillRect',window1, backgroundColor);    % Fills the screen with the background color
 Screen('Flip', window1);                        % Updates the screen (flip the offscreen buffer to the screen)
 
-% Get cross image
-% cross = imread(fullfile(stim_path,'crosses','crosses_00002.png')); % Load the image
-% Screen(window1, 'FillRect', backgroundColor);
-% cross = imread(fullfile(stim_path,'crosses','crosses_00002.png')); % Load the image
-% texture = Screen('MakeTexture', window1, cross);
-% [windowWidth, windowHeight] = Screen('WindowSize', window1);
-% dstRect = [0 0 windowWidth windowHeight];
-% Screen('DrawTexture', window1, texture, [], dstRect);
+% -------------------------------------------------------------------------
+%                       Setting the serial communication  
+% -------------------------------------------------------------------------
+% Parameters
+% -------
+% num_volumes
+%     Number of volumes
+% num_slices
+%     Number of slices in each volume
+% trigger_slice
+%     Slice number to trigger on
+% trigger_volume
+%     How often to trigger on a volume. 
+% pulse_length
+%     Pulse length in ms. Only needed in simulation mode.
+% TR_time
+%     TR time in ms. Only needed in simulation mode.
+% optional_trigger_slice
+%     0 for triggering on the slice typed above. 1 for triggering on each slice. 2 for triggering on random slice. (1 and 2 override above settings)
+% optional_trigger_volume
+%     0 for triggering on each volume typed above. 1 for triggering on each volume. 2 for triggering on random volume. (1 and 2 override above settings)
+% simulation
+%     False for synchronization mode. True for simulation mode.
+
+try
+    s = serialport('COM3', 57600); %The stimbox works at 57600 s/s
+    % s = serialport('COM6', 57600); %The stimbox works at 57600 s/s
+    disp('Serial port communication is set.')
+catch
+    s = [];
+    disp('No serial port communication.')
+end
+
+% -------------------------------------------------------------------------
+%                         Settings on StimBox
+% -------------------------------------------------------------------------
+% Trigger on slice: 1
+% Trigger on volume: Each
+% TR            =   2000
+% Volumes       =   261 (+ 180 -> eyes closed)
+% Slices        =   35
+% Pulse         =   50 ms
+% start laptop 1º, dps ent start na syncbox
 
 % -------------------------------------------------------------------------
 %                         Setup the joysticks
 % -------------------------------------------------------------------------
-
-% Create hotkey to activate the experiment
 KbName('UnifyKeyNames') % Unify key names
 hotkey          = KbName('LeftControl'); % Simulates MRI trigger for TR
 terminateKey    = KbName('ESCAPE');      % Key code for escape key
@@ -46,13 +79,13 @@ resp2           = KbName('2@');          % Key code for response 2
 resp3           = KbName('3#');          % Key code for response 3
 resp4           = KbName('4$');          % Key code for response 4
 
+
 % -------------------------------------------------------------------------
 %                              Text Stimuli
 % -------------------------------------------------------------------------
-
 cond_text = {'active','neutral'};
 
-textTraining = {
+textActiveStimuli = {
     'Gosto de todo o tipo de jogos e passatempos.'
     'Sou mais sensível à crítica do que era antes.'
     'Ultimamente tenho me sentido muito ansioso(a) e receoso(a).'
@@ -71,6 +104,25 @@ textTraining = {
     'Já não tenho qualquer sentimento.'
 };
 
+textNeutralStimuli = {
+    'Gosto de construir armários de cozinha.'
+    'Gosto de assentar tijolos ou azulejos.'
+    'Gostava de desenvolver um medicamento novo.'
+    'Gosto de estudar maneiras de reduzir a poluição da água.'
+    'Gosto de escrever livros ou peças de teatro.'
+    'Gosto de tocar um instrumento musical.'
+    'Gosto de ensinar a alguém uma rotina de exercícios.'
+    'Gosto de ajudar pessoas com problemas pessoais ou emocionais.'
+    'Gosto de comprar e vender ações e obrigações financeiras.'
+    'Gosto de gerir uma loja.'
+    'Gosto de desenvolver uma folha de cálculo usando software de computador.'
+    'Gosto de fazer a revisão de registos ou formulários.'
+    'Gosto de reparar eletrodomésticos.'
+    'Gosto de criar peixes.'
+    'Gosto de realizar experiências químicas.'
+    'Gosto de estudar o movimento dos planetas.'
+};
+
 responseOptions = {
     'Completamente Verdadeiro'
     'Maioritariamente Verdadeiro'
@@ -78,3 +130,9 @@ responseOptions = {
     'Falso'
 };
 
+% -------------------------------------------------------------------------
+%                       Version and Testing
+% -------------------------------------------------------------------------
+
+PsychtoolboxVersion     % Get the Psychtoolbox version
+% PerceptualVBLSyncTest % Perform test for synch issues

@@ -1,7 +1,7 @@
 % Load Settings and initialize 
-clear, clc
+clear, clc, close all
 subID = input('subID:','s'); % Input subject ID
-settings_2step_sim;              % Load all the settings from the file
+settings_2step_sim;          % Load all the settings from the file
 
 % Task information
 tr_point    = 0;             % Start at 0 because each trial is a full volume

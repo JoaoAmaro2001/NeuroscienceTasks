@@ -6,8 +6,6 @@
 cd('C:\git\JoaoAmaro2001\psychiatry-study');
 orip = pwd;
 addpath(genpath(orip));
-stim_path = fullfile(orip,'stimuli');
-results_path = fullfile(orip,'results');
 
 % -------------------------------------------------------------------------
 %                     Troubleshooting Psychtoolbox
@@ -22,13 +20,19 @@ results_path = fullfile(orip,'results');
 %                            Check Devices
 % -------------------------------------------------------------------------
 
-% devices = PsychHID('Devices'); % Get a list of all human-interface devices (HID) 
+devices = PsychHID('Devices'); % Get a list of all human-interface devices (HID) 
+
+% -------------------------------------------------------------------------
+%                         Initiate Training
+% -------------------------------------------------------------------------
+
+training;
 
 % -------------------------------------------------------------------------
 %                         Initiate Experiment
 % -------------------------------------------------------------------------
 
 eyes_closed;
-run_images_task;
+run_main_task;
 
 
