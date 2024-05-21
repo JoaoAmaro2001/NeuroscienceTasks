@@ -1,8 +1,6 @@
 % Load Settings and initialize 
-
 clear, clc, close all
 settings_main;
-% Task information
 
 % Init
 tr_final    = (6*60)/2;    % Number of triggers
@@ -29,7 +27,7 @@ while 1
         slice_n = slice_n + 1;
     end
 
-    if (tr_point == tr_n) || (~isempty(aux) && (aux==115)) % 115 is the ASCII code for 's'
+    if ~isempty(aux) && aux==115 % 115 is the ASCII code for 's'
         
         
         tr_trigger = tr_trigger + 1;
