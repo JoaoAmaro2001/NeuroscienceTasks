@@ -20,7 +20,7 @@ addpath(genpath(orip));
 %                            Check Devices
 % -------------------------------------------------------------------------
 
-devices = PsychHID('Devices'); % Get a list of all human-interface devices (HID) 
+devices = PsychHID('Devices') % Get a list of all human-interface devices (HID) 
 
 % -------------------------------------------------------------------------
 %                         Initiate Training

@@ -49,7 +49,8 @@ Screen('Flip', window1);                        % Updates the screen (flip the o
 %     False for synchronization mode. True for simulation mode.
 
 try
-    s = serialport('COM3', 57600); %The stimbox works at 57600 s/s
+    joy = serialport('COM3', 57600); %The stimbox works at 57600 s/s
+    joy.Timeout = 5; % Set a timeout of 5 seconds
     % s = serialport('COM6', 57600); %The stimbox works at 57600 s/s
     disp('Serial port communication is set.')
 catch
@@ -60,11 +61,11 @@ end
 % -------------------------------------------------------------------------
 %                         Settings on StimBox
 % -------------------------------------------------------------------------
-% Trigger on slice: 1
-% Trigger on volume: Each
+% Trigger on slice: Each
+% Trigger on volume: 1
 % TR            =   2000
-% Volumes       =   261 (+ 180 -> eyes closed)
-% Slices        =   35
+% Volumes       =   261 (+ 180 -> eyes closed) -> dummies do not send tr
+% Slices        =   36
 % Pulse         =   50 ms
 % start laptop 1º, dps ent start na syncbox
 
@@ -88,7 +89,7 @@ cond_text = {'active','neutral'};
 textActiveStimuli = {
     'Gosto de todo o tipo de jogos e passatempos.'
     'Sou mais sensível à crítica do que era antes.'
-    'Ultimamente tenho me sentido muito ansioso(a) e receoso(a).'
+    'Ultimamente tenho-me sentido muito ansioso(a) e receoso(a).'
     'Choro facilmente.'
     'Tenho medo de perder a minha sanidade mental.'
     'Sinto-me melancólico(a) e deprimido(a).'

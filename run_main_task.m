@@ -44,9 +44,10 @@ tic;
 while 1
 
     % SERIAL PORT COMMUNICATION
-    timetmp = toc;
-    flush(s)
-    aux = read(s,1,'uint8'); % Reads one sample
+    timetmp = toc
+    flush(joy)
+    % aux = read(s,1,'uint8') % Reads one sample
+    joy_in = read(joy,1,'uint8')
 
     % MANUAL CONTROL
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
@@ -58,13 +59,18 @@ while 1
             aux = 115;
         end
     end
-
+end
     % BUTTON CHECK CONTROL CONTROL
     if (state == 2 || state == 3) && flag_resp
         [keyIsDown, ~, keyCode] = KbCheck;
+        if state == 2
+            text_input = textActiveStimuli;
+        elseif state == 3
+            text_input = textNeutralStimuli;
+        end
         if keyIsDown && keyCode(resp1)
             boldOption              = 1;
-            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -76,7 +82,7 @@ while 1
         end
         if keyIsDown && keyCode(resp2)
             boldOption              = 2;
-            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -88,7 +94,7 @@ while 1
         end
         if keyIsDown && keyCode(resp3)
             boldOption              = 3;
-            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -100,7 +106,7 @@ while 1
         end
         if keyIsDown && keyCode(resp4)
             boldOption              = 4;
-            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -114,7 +120,7 @@ while 1
 
     % TR-DEPENDENT STIMULUS CONTROL 
     if ~isempty(aux) && (aux == 115)
-
+        toc
         if tr_trigger == 0
             start_exp = GetSecs;
             fprintf('First trigger received\n')
@@ -177,7 +183,7 @@ while 1
                         rt_num(trial_num)   = NaN;
                         res_num(trial_num)  = NaN;         
                         trial(trial_num)    = trial_num;         
-                        stim_txt{trial_num} = textTraining{trial_num};         
+                        stim_txt{trial_num} = textActiveStimuli{trial_num};         
                         res_txt{trial_num}   = "";
                         cond{trial_num}     = cond_text{1};
                     else
@@ -211,7 +217,7 @@ while 1
                         rt_num(trial_num)   = NaN;
                         res_num(trial_num)  = NaN;         
                         trial(trial_num)    = trial_num;         
-                        stim_txt{trial_num} = stim_txt{trial_num};         
+                        stim_txt{trial_num} = textNeutralStimuli{trial_num};         
                         res_txt{trial_num}   = "";
                         cond{trial_num}     = cond_text{1};
                     else

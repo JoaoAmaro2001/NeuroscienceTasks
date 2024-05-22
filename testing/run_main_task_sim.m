@@ -71,7 +71,7 @@ while 1
         [keyIsDown, ~, keyCode] = KbCheck; % Ask participant to press for long?
         if keyIsDown && keyCode(resp1)
             boldOption              = 1;
-            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, textActiveStimuli, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -83,7 +83,7 @@ while 1
         end
         if keyIsDown && keyCode(resp2)
             boldOption              = 2;
-            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, textActiveStimuli, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -95,7 +95,7 @@ while 1
         end
         if keyIsDown && keyCode(resp3)
             boldOption              = 3;
-            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, textActiveStimuli, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -107,7 +107,7 @@ while 1
         end
         if keyIsDown && keyCode(resp4)
             boldOption              = 4;
-            drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, textActiveStimuli, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -184,7 +184,7 @@ while 1
                         rt_num(trial_num)   = NaN;
                         res_num(trial_num)  = NaN;         
                         trial(trial_num)    = trial_num;         
-                        stim_txt{trial_num} = textTraining{trial_num};         
+                        stim_txt{trial_num} = textActiveStimuli{trial_num};         
                         res_txt{trial_num}   = "";
                         cond{trial_num}     = cond_text{1};
                     else
