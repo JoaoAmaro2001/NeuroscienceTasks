@@ -68,10 +68,15 @@ while 1
 
     % BUTTON CHECK CONTROL CONTROL (FINISH!)
     if (state == 2 || state == 3) && flag_resp
-        [keyIsDown, ~, keyCode] = KbCheck; % Ask participant to press for long?
+        [keyIsDown, ~, keyCode] = KbCheck; 
+        if state == 2
+            text_input = textActiveStimuli;
+        elseif state == 3
+            text_input = textNeutralStimuli;
+        end
         if keyIsDown && keyCode(resp1)
             boldOption              = 1;
-            drawText(window1, textActiveStimuli, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -83,7 +88,7 @@ while 1
         end
         if keyIsDown && keyCode(resp2)
             boldOption              = 2;
-            drawText(window1, textActiveStimuli, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -95,7 +100,7 @@ while 1
         end
         if keyIsDown && keyCode(resp3)
             boldOption              = 3;
-            drawText(window1, textActiveStimuli, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -107,7 +112,7 @@ while 1
         end
         if keyIsDown && keyCode(resp4)
             boldOption              = 4;
-            drawText(window1, textActiveStimuli, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;

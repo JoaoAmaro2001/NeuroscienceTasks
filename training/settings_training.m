@@ -24,14 +24,18 @@ H = rect(RectBottom);                           % screen height
 Screen('FillRect',window1, backgroundColor);    % Fills the screen with the background color
 Screen('Flip', window1);                        % Updates the screen (flip the offscreen buffer to the screen)
 
-% Get cross image
-% cross = imread(fullfile(stim_path,'crosses','crosses_00002.png')); % Load the image
-% Screen(window1, 'FillRect', backgroundColor);
-% cross = imread(fullfile(stim_path,'crosses','crosses_00002.png')); % Load the image
-% texture = Screen('MakeTexture', window1, cross);
-% [windowWidth, windowHeight] = Screen('WindowSize', window1);
-% dstRect = [0 0 windowWidth windowHeight];
-% Screen('DrawTexture', window1, texture, [], dstRect);
+% -------------------------------------------------------------------------
+%                       Setting the serial communication  
+% -------------------------------------------------------------------------
+
+try
+    % s = serialport('COM3', 57600); %The stimbox works at 57600 s/s
+    s = serialport('COM6', 57600); %The stimbox works at 57600 s/s
+    disp('Serial port communication is set.')
+catch
+    s = [];
+    disp('No serial port communication.')
+end
 
 % -------------------------------------------------------------------------
 %                         Setup the joysticks
@@ -41,10 +45,10 @@ Screen('Flip', window1);                        % Updates the screen (flip the o
 KbName('UnifyKeyNames') % Unify key names
 hotkey          = KbName('LeftControl'); % Simulates MRI trigger for TR
 terminateKey    = KbName('ESCAPE');      % Key code for escape key
-resp1           = KbName('1!');          % Key code for response 1
-resp2           = KbName('2@');          % Key code for response 2
-resp3           = KbName('3#');          % Key code for response 3
-resp4           = KbName('4$');          % Key code for response 4
+button1           = 97;                  % Key - code for the first button
+button2           = 98;                  % Key - code for the second button
+button3           = 99;                  % Key - code for the third button
+button4           = 100;                 % Key - code for the fourth button
 
 % -------------------------------------------------------------------------
 %                              Text Stimuli

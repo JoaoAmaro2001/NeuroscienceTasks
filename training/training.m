@@ -44,17 +44,11 @@ prevDigit = -1;  % Initialize prevDigit to a value that firstDigit will never be
 tic;
 while 1
 
-    % SIMULATING SERIAL PORT COMMUNICATION
+    % SERIAL PORT COMMUNICATION
     timetmp = toc;
-    firstDigit = str2double(num2str(floor(timetmp)));
-    if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit && firstDigit ~= 0
-        aux = 115;
-        beep
-        toc
-    else
-        aux = [];
-    end
-    prevDigit = firstDigit; % Update prevDigit
+    flush(s)
+    % aux = read(s,1,'uint8') % Reads one sample
+    aux = read(s,1,'uint8');
 
     % MANUAL CONTROL
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
@@ -69,8 +63,7 @@ while 1
 
     % BUTTON CHECK CONTROL CONTROL
     if (state == 2 || state == 3) && flag_resp
-        [keyIsDown, ~, keyCode] = KbCheck;
-        if keyIsDown && keyCode(resp1)
+        if aux == button1
             boldOption              = 1;
             drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -82,7 +75,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp2)
+        if aux == button2
             boldOption              = 2;
             drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -94,7 +87,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp3)
+        if aux == button3
             boldOption              = 3;
             drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -106,7 +99,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp4)
+        if aux == button4
             boldOption              = 4;
             drawText(window1, textTraining, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)

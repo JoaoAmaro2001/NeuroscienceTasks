@@ -44,12 +44,12 @@ tic;
 while 1
 
     % SERIAL PORT COMMUNICATION
-    timetmp = toc
-    flush(joy)
+    timetmp = toc;
+    flush(s)
     % aux = read(s,1,'uint8') % Reads one sample
-    joy_in = read(joy,1,'uint8')
+    aux = read(s,1,'uint8');
 
-    % MANUAL CONTROL
+    % MANUAL CONTROL (Should delete hotkey?)
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
     if keyIsDown
         if keyCode(terminateKey) % Check if the terminate key was pressed
@@ -59,16 +59,15 @@ while 1
             aux = 115;
         end
     end
-end
+
     % BUTTON CHECK CONTROL CONTROL
     if (state == 2 || state == 3) && flag_resp
-        [keyIsDown, ~, keyCode] = KbCheck;
         if state == 2
             text_input = textActiveStimuli;
         elseif state == 3
             text_input = textNeutralStimuli;
         end
-        if keyIsDown && keyCode(resp1)
+        if aux == button1
             boldOption              = 1;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -80,7 +79,7 @@ end
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp2)
+        if aux == button2
             boldOption              = 2;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -92,7 +91,7 @@ end
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp3)
+        if aux == button3
             boldOption              = 3;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -104,7 +103,7 @@ end
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp4)
+        if aux == button4
             boldOption              = 4;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -153,7 +152,7 @@ end
                     disp('Estado: Blank / Cross')
                     flag_cross = 0;
                 end
-                if tr_cross == 15 
+                if tr_cross == 16 
                     tr_cross = 0;
                     flag_cross = 1;
                     if mod(num_cross,2) == 0 % Even is active stimulus
