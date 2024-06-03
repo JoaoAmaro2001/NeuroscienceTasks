@@ -12,7 +12,7 @@ settings_main; % Load all the settings from the file
 % -------------------------------------------------------------------------
 
 % Init
-tr_final    = (8*32 + 8*32 + 10)/2; % Number of triggers
+tr_final    = (8*32 + 8*32)/2; % Number of triggers
 tr_trigger  = 0;                    % TR trigger counter (There are 261 -> ((8*32 + 8*32 + 10)/2) = 8.7 mins)
 tr_N        = 0;                    % tr counter inside loop for each block
 tr_n        = 0;                    % tr counter inside loop for each stimulus
@@ -25,6 +25,7 @@ trial_num   = 1;                    % Trial counter
 flag_screen = 1;                    % Flag for updating screen
 flag_resp   = 1;                    % Flag for response -> can only respond while is 1
 flag_cross  = 1;                    % Flag for cross -> first time entering cross
+flag_first  = 1;                    % Flag for first time reading the aux
 rt_num      = zeros(1,32);          % Reaction time for response
 res_num     = zeros(1,32);          % Response number
 trial       = zeros(1,32);          % Trial number
@@ -32,6 +33,8 @@ stim_txt    = cell(1,32);           % Stimulus text
 res_txt     = cell(1,32);           % Response text
 cond        = cell(1,32);           % Conditions
 boldOption  = [];                   % Variable that carries response info
+
+% Read the subject id - handedness information within the id
 
 % Pyschtoolblox prelim
 Priority(MaxPriority(window1)); % Give priority of resources to experiment
@@ -46,8 +49,12 @@ while 1
     % SERIAL PORT COMMUNICATION
     timetmp = toc;
     flush(s)
-    % aux = read(s,1,'uint8') % Reads one sample
     aux = read(s,1,'uint8');
+
+    % 0. BLANK SCREEN
+    Screen(window1, 'FillRect', backgroundColor);
+    Screen('Flip', window1); % Flip the screen (don't clear the buffer)
+    disp('Estado: Ecrã em branco')
 
     % MANUAL CONTROL (Should delete hotkey?)
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
@@ -59,7 +66,7 @@ while 1
             aux = 115;
         end
     end
-
+    
     % BUTTON CHECK CONTROL CONTROL
     if (state == 2 || state == 3) && flag_resp
         if state == 2

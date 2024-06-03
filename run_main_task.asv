@@ -1,5 +1,6 @@
 clear, clc, close all
-settings_main_sim; % Load all the settings from the file
+subID = input('subID:','s');
+settings_main; % Load all the settings from the file
 
 % -------------------------------------------------------------------------
 %                           State Information:
@@ -11,19 +12,20 @@ settings_main_sim; % Load all the settings from the file
 % -------------------------------------------------------------------------
 
 % Init
-tr_final    = (8*4 + 8 + 10)/2;     % Number of triggers for training session
+tr_final    = (8*32 + 8*32)/2; % Number of triggers
 tr_trigger  = 0;                    % TR trigger counter (There are 261 -> ((8*32 + 8*32 + 10)/2) = 8.7 mins)
 tr_N        = 0;                    % tr counter inside loop for each block
 tr_n        = 0;                    % tr counter inside loop for each stimulus
 tr_cross    = 0;                    % tr counter for cross
 num_cross   = 0;                    % Counter for the cross state
-state       = 2;                    % Gets the state information
+state       = 0;                    % Gets the state information
 ds_block    = 0;                    % Set the ds block counter -> active stimulus
 dn_block    = 0;                    % Set the dn block counter -> neutral stimulus
 trial_num   = 1;                    % Trial counter
 flag_screen = 1;                    % Flag for updating screen
 flag_resp   = 1;                    % Flag for response -> can only respond while is 1
 flag_cross  = 1;                    % Flag for cross -> first time entering cross
+flag_first  = 1;                    % Flag for first time entering the 
 rt_num      = zeros(1,32);          % Reaction time for response
 res_num     = zeros(1,32);          % Response number
 trial       = zeros(1,32);          % Trial number
@@ -32,30 +34,29 @@ res_txt     = cell(1,32);           % Response text
 cond        = cell(1,32);           % Conditions
 boldOption  = [];                   % Variable that carries response info
 
+% Read the subject id - handedness information within the id
+
 % Pyschtoolblox prelim
 Priority(MaxPriority(window1)); % Give priority of resources to experiment
 Screen('TextSize', window1, 50);
 Screen('DrawText',window1,'A experiência começará em breve', (W/3), (H/2), textColor);
 Screen('Flip',window1);
 
-% Start Experiment
-prevDigit = -1;  % Initialize prevDigit to a value that firstDigit will never be
+% Start the experiment
 tic;
 while 1
 
-    % SIMULATING SERIAL PORT COMMUNICATION
+    % SERIAL PORT COMMUNICATION
     timetmp = toc;
-    firstDigit = str2double(num2str(floor(timetmp)));
-    if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit && firstDigit ~= 0
-        aux = 115;
-        beep
-        toc
-    else
-        aux = [];
-    end
-    prevDigit = firstDigit; % Update prevDigit
+    flush(s)
+    aux = read(s,1,'uint8');
 
-    % MANUAL CONTROL
+    % 0. BLANK SCREEN
+    Screen(window1, 'FillRect', backgroundColor);
+    Screen('Flip', window1); % Flip the screen (don't clear the buffer)
+    disp('Estado: Ecrã em branco')
+
+    % MANUAL CONTROL (Should delete hotkey?)
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
     if keyIsDown
         if keyCode(terminateKey) % Check if the terminate key was pressed
@@ -65,16 +66,15 @@ while 1
             aux = 115;
         end
     end
-
-    % BUTTON CHECK CONTROL CONTROL (FINISH!)
+    
+    % BUTTON CHECK CONTROL CONTROL
     if (state == 2 || state == 3) && flag_resp
-        [keyIsDown, ~, keyCode] = KbCheck; 
         if state == 2
             text_input = textActiveStimuli;
         elseif state == 3
             text_input = textNeutralStimuli;
         end
-        if keyIsDown && keyCode(resp1)
+        if aux == button1
             boldOption              = 1;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -86,7 +86,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp2)
+        if aux == button2
             boldOption              = 2;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -98,7 +98,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp3)
+        if aux == button3
             boldOption              = 3;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -110,7 +110,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp4)
+        if aux == button4
             boldOption              = 4;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -126,7 +126,7 @@ while 1
 
     % TR-DEPENDENT STIMULUS CONTROL 
     if ~isempty(aux) && (aux == 115)
-
+        toc
         if tr_trigger == 0
             start_exp = GetSecs;
             fprintf('First trigger received\n')
@@ -137,16 +137,16 @@ while 1
 
         switch state
 
-            % case 0 
-            %     % 0. Blank screen
-            %     tr_trigger = tr_trigger + 1;
-            %     Screen(window1, 'FillRect', backgroundColor);
-            %     Screen('Flip', window1); % Flip the screen (don't clear the buffer)
-            %     disp('Estado: Ecrã em branco')
-            %     if tr_trigger == 4 % It needs to be 5-1 such that tr = 5 begins case 2
-            %         state = 2;
-            %         ds_block = ds_block + 1; % DS is the first block
-            %     end
+            case 0 
+                % 0. Blank screen
+                tr_trigger = tr_trigger + 1;
+                Screen(window1, 'FillRect', backgroundColor);
+                Screen('Flip', window1); % Flip the screen (don't clear the buffer)
+                disp('Estado: Ecrã em branco')
+                if tr_trigger == 4 % It needs to be 5-1 such that tr = 5 begins case 2
+                    state = 2;
+                    ds_block = ds_block + 1; % DS is the first block
+                end
 
             case 1
                 % 1. Blank screen & Cross
@@ -159,7 +159,7 @@ while 1
                     disp('Estado: Blank / Cross')
                     flag_cross = 0;
                 end
-                if tr_cross == 15 
+                if tr_cross == 16 
                     tr_cross = 0;
                     flag_cross = 1;
                     if mod(num_cross,2) == 0 % Even is active stimulus
@@ -223,7 +223,7 @@ while 1
                         rt_num(trial_num)   = NaN;
                         res_num(trial_num)  = NaN;         
                         trial(trial_num)    = trial_num;         
-                        stim_txt{trial_num} = stim_txt{trial_num};         
+                        stim_txt{trial_num} = textNeutralStimuli{trial_num};         
                         res_txt{trial_num}   = "";
                         cond{trial_num}     = cond_text{1};
                     else
@@ -261,3 +261,4 @@ fprintf('Tempo total: %f seconds\n', end_exp-start_exp) % Total time of the expe
 name_file = [results_path '\resultfile_training.xlsx'];
 T = table(trial',stim_txt',res_txt',res_num',rt_num',cond','VariableNames',{'Trial','Stimulus','Response', 'ResponseIndex','ReactionTime','Condition'});
 writetable(T,name_file)
+
