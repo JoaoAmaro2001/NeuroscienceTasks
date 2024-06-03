@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<joystick configversion="19" appversion="3.4.0">
+    <!--The SDL name for a joystick is included for informational purposes only.-->
+    <sdlname>Celeritas Joystick</sdlname>
+    <!--The Unique ID for a joystick is included for informational purposes only.-->
+    <uniqueID>03002eb2662200001700000000000000880623</uniqueID>
+    <sets>
+        <set index="1">
+            <axis index="2">
+                <throttle>normal</throttle>
+            </axis>
+            <axis index="1">
+                <throttle>normal</throttle>
+            </axis>
+            <axis index="4">
+                <throttle>normal</throttle>
+            </axis>
+            <axis index="3">
+                <throttle>normal</throttle>
+            </axis>
+            <button index="2">
+                <slots>
+                    <slot>
+                        <code>0x32</code>
+                        <mode>keyboard</mode>
+                    </slot>
+                </slots>
+            </button>
+            <button index="1">
+                <slots>
+                    <slot>
+                        <code>0x31</code>
+                        <mode>keyboard</mode>
+                    </slot>
+                </slots>
+            </button>
+            <button index="4">
+                <slots>
+                    <slot>
+                        <code>0x34</code>
+                        <mode>keyboard</mode>
+                    </slot>
+                </slots>
+            </button>
+            <button index="3">
+                <slots>
+                    <slot>
+                        <code>0x33</code>
+                        <mode>keyboard</mode>
+                    </slot>
+                </slots>
+            </button>
+        </set>
+    </sets>
+</joystick>

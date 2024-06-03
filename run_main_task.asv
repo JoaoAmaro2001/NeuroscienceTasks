@@ -25,7 +25,7 @@ trial_num   = 1;                    % Trial counter
 flag_screen = 1;                    % Flag for updating screen
 flag_resp   = 1;                    % Flag for response -> can only respond while is 1
 flag_cross  = 1;                    % Flag for cross -> first time entering cross
-flag_first  = 1;                    % Flag for first time entering the 
+flag_first  = 1;                    % Flag for first time reading the aux
 rt_num      = zeros(1,32);          % Reaction time for response
 res_num     = zeros(1,32);          % Response number
 trial       = zeros(1,32);          % Trial number
@@ -56,7 +56,7 @@ while 1
     Screen('Flip', window1); % Flip the screen (don't clear the buffer)
     disp('Estado: Ecrã em branco')
 
-    % MANUAL CONTROL (Should delete hotkey?)
+    % MANUAL CONTROL 
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
     if keyIsDown
         if keyCode(terminateKey) % Check if the terminate key was pressed
@@ -67,8 +67,64 @@ while 1
         end
     end
     
-    % BUTTON CHECK CONTROL CONTROL
-    if (state == 2 || state == 3) && flag_resp
+    % BUTTON CHECK CONTROL CONTROL (both types of joystick)
+    [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
+    if keyIsDown
+        if (state == 2 || state == 3) && flag_resp && handedness == 1
+            if state == 2
+                text_input = textActiveStimuli;
+            elseif state == 3
+                text_input = textNeutralStimuli;
+            end
+            if keyCode(button1)
+                boldOption              = 1;
+                drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
+                addResponseOptions(window1, responseOptions, boldOption)
+                rt_end                  = GetSecs;
+                rt                      = rt_end - rt_beg;
+                rt_num(trial_num)       = rt;
+                res_num(trial_num)      = 1;  
+                res_txt{trial_num}      = responseOptions{1}; 
+                flag_resp               = 0;
+                boldOption              = [];
+            elseif keyCode(button2)
+                boldOption              = 2;
+                drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
+                addResponseOptions(window1, responseOptions, boldOption)
+                rt_end                  = GetSecs;
+                rt                      = rt_end - rt_beg;
+                rt_num(trial_num)       = rt;
+                res_num(trial_num)      = 2;  
+                res_txt{trial_num}      = responseOptions{2}; 
+                flag_resp               = 0;
+                boldOption              = [];
+            elseif keyCode(button3)
+                boldOption              = 3;
+                drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
+                addResponseOptions(window1, responseOptions, boldOption)
+                rt_end                  = GetSecs;
+                rt                      = rt_end - rt_beg;
+                rt_num(trial_num)       = rt;
+                res_num(trial_num)      = 3;  
+                res_txt{trial_num}      = responseOptions{3}; 
+                flag_resp               = 0;
+                boldOption              = [];
+            elseif keyCode(button4)
+                boldOption              = 4;
+                drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
+                addResponseOptions(window1, responseOptions, boldOption)
+                rt_end                  = GetSecs;
+                rt                      = rt_end - rt_beg;
+                rt_num(trial_num)       = rt;
+                res_num(trial_num)      = 4;  
+                res_txt{trial_num}      = responseOptions{4}; 
+                flag_resp               = 0;
+                boldOption              = [];
+            end
+        end
+    end
+    
+    if (state == 2 || state == 3) && flag_resp && handedness == 2
         if state == 2
             text_input = textActiveStimuli;
         elseif state == 3
@@ -85,8 +141,7 @@ while 1
             res_txt{trial_num}      = responseOptions{1}; 
             flag_resp               = 0;
             boldOption              = [];
-        end
-        if aux == button2
+        elseif aux == button2
             boldOption              = 2;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -97,8 +152,7 @@ while 1
             res_txt{trial_num}      = responseOptions{2}; 
             flag_resp               = 0;
             boldOption              = [];
-        end
-        if aux == button3
+        elseif aux == button3
             boldOption              = 3;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -109,8 +163,7 @@ while 1
             res_txt{trial_num}      = responseOptions{3}; 
             flag_resp               = 0;
             boldOption              = [];
-        end
-        if aux == button4
+        elseif aux == button4
             boldOption              = 4;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)

@@ -11,19 +11,20 @@ settings_main_sim; % Load all the settings from the file
 % -------------------------------------------------------------------------
 
 % Init
-tr_final    = (8*4 + 8 + 10)/2;     % Number of triggers for training session
+tr_final    = (8*32 + 8*32)/2; % Number of triggers
 tr_trigger  = 0;                    % TR trigger counter (There are 261 -> ((8*32 + 8*32 + 10)/2) = 8.7 mins)
 tr_N        = 0;                    % tr counter inside loop for each block
 tr_n        = 0;                    % tr counter inside loop for each stimulus
 tr_cross    = 0;                    % tr counter for cross
 num_cross   = 0;                    % Counter for the cross state
-state       = 2;                    % Gets the state information
+state       = 0;                    % Gets the state information
 ds_block    = 0;                    % Set the ds block counter -> active stimulus
 dn_block    = 0;                    % Set the dn block counter -> neutral stimulus
 trial_num   = 1;                    % Trial counter
 flag_screen = 1;                    % Flag for updating screen
 flag_resp   = 1;                    % Flag for response -> can only respond while is 1
 flag_cross  = 1;                    % Flag for cross -> first time entering cross
+flag_first  = 1;                    % Flag for first time reading the aux
 rt_num      = zeros(1,32);          % Reaction time for response
 res_num     = zeros(1,32);          % Response number
 trial       = zeros(1,32);          % Trial number
@@ -31,6 +32,8 @@ stim_txt    = cell(1,32);           % Stimulus text
 res_txt     = cell(1,32);           % Response text
 cond        = cell(1,32);           % Conditions
 boldOption  = [];                   % Variable that carries response info
+
+% Read the subject id - handedness information within the id
 
 % Pyschtoolblox prelim
 Priority(MaxPriority(window1)); % Give priority of resources to experiment
@@ -49,6 +52,10 @@ while 1
     if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit && firstDigit ~= 0
         aux = 115;
         beep
+        % S(1) = load('gong');
+        % S(2) = load('handel');
+        % sound(S(1).y,S(1).Fs)
+        % sound(S(2).y,S(2).Fs)
         toc
     else
         aux = [];
@@ -61,9 +68,9 @@ while 1
         if keyCode(terminateKey) % Check if the terminate key was pressed
             break % Exit the function or script
         end
-        if keyCode(hotkey) % Check if the hotkey was pressed
-            aux = 115;
-        end
+        % if keyCode(hotkey) % Check if the hotkey was pressed
+        %     aux = 115;
+        % end
     end
 
     % BUTTON CHECK CONTROL CONTROL (FINISH!)
@@ -137,16 +144,16 @@ while 1
 
         switch state
 
-            % case 0 
-            %     % 0. Blank screen
-            %     tr_trigger = tr_trigger + 1;
-            %     Screen(window1, 'FillRect', backgroundColor);
-            %     Screen('Flip', window1); % Flip the screen (don't clear the buffer)
-            %     disp('Estado: Ecrã em branco')
-            %     if tr_trigger == 4 % It needs to be 5-1 such that tr = 5 begins case 2
-            %         state = 2;
-            %         ds_block = ds_block + 1; % DS is the first block
-            %     end
+            case 0 
+                % 0. Blank screen
+                tr_trigger = tr_trigger + 1;
+                Screen(window1, 'FillRect', backgroundColor);
+                Screen('Flip', window1); % Flip the screen (don't clear the buffer)
+                disp('Estado: Ecrã em branco')
+                if tr_trigger == 4 % It needs to be 5-1 such that tr = 5 begins case 2
+                    state = 2;
+                    ds_block = ds_block + 1; % DS is the first block
+                end
 
             case 1
                 % 1. Blank screen & Cross

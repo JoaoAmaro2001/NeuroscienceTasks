@@ -69,15 +69,16 @@ end
 % 1º start laptop; 2º start session in syncbox; 3º start mri machine
 
 % -------------------------------------------------------------------------
-%                         Setup the joysticks
+%                           Handedness
 % -------------------------------------------------------------------------
-KbName('UnifyKeyNames') % Unify key names
-hotkey          = KbName('LeftControl'); % Simulates MRI trigger for TR
-terminateKey    = KbName('ESCAPE');      % Key - code for escape key
-button1         = 97;                    % Key - code for the first button
-button2         = 98;                    % Key - code for the second button
-button3         = 99;                    % Key - code for the third button
-button4         = 100;                   % Key - code for the fourth button
+
+handedness = 1; % 1 for one handed or 2 for two handed joysticks
+
+% -------------------------------------------------------------------------
+%                         Setup MRI joysticks (two handed)
+% -------------------------------------------------------------------------
+
+if handedness == 2
 
 % Joystick Information
 % -------------------------------------------------------------------------
@@ -87,9 +88,37 @@ button4         = 100;                   % Key - code for the fourth button
 % Left down    - 98
 % Left up      - 97
 % -------------------------------------------------------------------------
-% Signals for one-handed control of two-handed joystick:
 
+KbName('UnifyKeyNames') % Unify key names
+hotkey          = KbName('LeftControl'); % Simulates MRI trigger for TR
+terminateKey    = KbName('ESCAPE');      % Key - code for escape key
+button1         = 97;                    % Key - code for the first button
+button2         = 98;                    % Key - code for the second button
+button3         = 99;                    % Key - code for the third button
+button4         = 100;                   % Key - code for the fourth button
 
+elseif handedness == 1
+
+% -------------------------------------------------------------------------
+%                         Setup Celeritas joystick (one handed)
+% -------------------------------------------------------------------------
+
+% You need to install antimicrox (https://github.com/AntiMicroX/antimicrox/)
+% Setup the keyboard keys in the antimicrox app
+% Use those keyboard keys (e.g. 1,2,3,4) as representing stimuli code
+% You can save the config file as an .amgp and load it in antimicrox
+
+KbName('UnifyKeyNames') % Unify key names
+hotkey          = KbName('LeftControl'); % Simulates MRI trigger for TR
+terminateKey    = KbName('ESCAPE');      % Key - code for escape key
+button1         = KbName('1!');          % Key code for response 1
+button2         = KbName('2@');          % Key code for response 2
+button3         = KbName('3#');          % Key code for response 3
+button4         = KbName('4$');          % Key code for response 4
+
+else
+    error('Specify if using a one-handed or two-handed joystick.')
+end
 
 % -------------------------------------------------------------------------
 %                              Text Stimuli
