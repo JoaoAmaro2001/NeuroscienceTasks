@@ -1,279 +1,465 @@
-clear, clc, close all
-subID = input('subID:','s');
+clear all
+close all
+subID = input('subID:', 's');
 settings_main; % Load all the settings from the file
-terminateKey    = KbName('ESCAPE');      % Key code for escape key
+HideCursor;
 
 % -------------------------------------------------------------------------
-%                           State Information:
-%                               
-% 0. Blank screen
-% 1. Blank screen & Cross
-% 2. Load active stimulus
-% 3. Load neutral stimulus
-
+%                       Set variables
 % -------------------------------------------------------------------------
-%                              Variables
-% ------------------------------------------------------------------------- 
-n                  = 8; % number of trials/videos
+% Number of trials/videos based on available videos
+n                 = length(videoList);
+% n                = 2;
+trial_            = 1;
+t                 = trial_;
 
-BlankTime_         = zeros(1,n); 
-FixTime            = zeros(1,n); 
-Video1Time         = zeros(1,n); 
-trial_             = 1;
-score_             = 0;
-flag_vote_state4   = 0;
-t                  = trial_;
+% Initialize time variables
+FixTime           = zeros(1,n); 
+VideoTime         = zeros(1,n);
+Ego_Time          = zeros(1,n);
+Allo_Time         = zeros(1,n);
+Valence_Time      = zeros(1,n);
+Arousal_Time      = zeros(1,n);
+Blank_Time        = zeros(1,n); 
 
-Video_name_trial   = cell(1,n); % list of movienames presented at each trial
+video_name        = cell(1,n)
 
-% valence and arousal
-SelectValenceTime  = zeros(1,n); %selection time for valence (start)
-SelectArousalTime  = zeros(1,n); %selection time for arousal (start)
+% Reaction times and choices for valence and arousal
+rt_ego            = zeros(1,n);
+rt_allo           = zeros(1,n);
+rt_valence        = zeros(1,n); 
+rt_arousal        = zeros(1,n); 
 
-rtValence          = zeros(1,n); % reaction times for valence selection
-rtArousal          = zeros(1,n); % reaction times for arousal selection
+ego_coordinate_x  = zeros(1,n);
+ego_coordinate_y  = zeros(1,n);
+allo_coordinate_x = zeros(1,n);
+allo_coordinate_y = zeros(1,n);
+choiceValence     = zeros(1,n); 
+choiceArousal     = zeros(1,n);
 
-choiceValence      = zeros(1,n); % choice for valence
-choiceArousal      = zeros(1,n); % choice for arousal
-
-% states and variables
-num_cross   = 0;                 % Counter for the cross state
-state       = 0;                 % Gets the state information
-rt_num      = zeros(1,n);        % Reaction time for response
-res_num     = zeros(1,n);        % Response number
-trial       = zeros(1,n);        % Trial number
-stim_txt    = cell(1,n);         % Stimulus text
-res_txt     = cell(1,n);         % Response text
-cond        = cell(1,n);         % Conditions
-TR          = 2;
-Trigger=zeros(1,n);
-
-% flags
-flag_screen = 1;                 % Flag for updating screen
-flag_resp   = 1;                 % Flag for response -> can only respond while is 1
-flag_cross  = 1;                 % Flag for cross -> first time entering cross
-
-% Define circle positions (just an example, adjust as needed)
-circlePositions = [100 500 900 1300];  % X-positions of circles
-
-
-
-% -------------------------------------------------------------------------
-%                       Pyschtoolblox prelim
-% ------------------------------------------------------------------------- 
-Priority(MaxPriority(window1)); % Give priority of resources to experiment
-Screen('TextSize', window1, 50);
-Screen('DrawText',window1,'A experiência começará em breve', (W/6), (H/4), textColor);
-Screen('Flip',window1);
+state = 0; % Start with state 0
 
 % -------------------------------------------------------------------------
 %                       Start experiment
-% ------------------------------------------------------------------------- 
+% -------------------------------------------------------------------------
 prevDigit = -1;  % Initialize prevDigit to a value that firstDigit will never be
 tic;
-while 1
 
+while trial_ <= n
     switch state
 
+% -------------------------------------------------------------------------
+%                       Countdown for empathic sync
+% -------------------------------------------------------------------------
         case 0
-            % 0. Blank screen
-            Screen(window1, 'FillRect', backgroundColor);
-            BlankTime_ = Screen('Flip', window1); % Flip the screen (don't clear the buffer)
-            disp('Estado: Ecrã em branco')
-            if trial_ == 1
-                 TriggerStart = BlankTime_;
+            countdown_from = 10; % Start countdown from 10
+            for i = countdown_from:-1:1
+                Screen('TextSize', window_1, 60);
+                Screen('TextFont', window_1, 'Arial');
+                message = sprintf('Starting in %d', i);
+                DrawFormattedText(window_1, message, 'center', 'center', textColor);
+                Screen('Flip', window_1);
+                WaitSecs(1);
             end
+            state = 1;  % Proceed to the message state
 
-            % Cross
-            t = trial_; % randomizedTrials(trial_);
-            fixationDuration1 = poissrnd(2, 1, n); % Example initialization
-            drawCross(window1, W, H);
-            tFixation = Screen('Flip', window1);  % Cross should appear during the same blank TR
-            disp('Cross')
-            time_cross = GetSecs - BlankTime_;
-            WaitSecs(fixationDuration(trial_));  % wait for the fixation duration to end
-            state = 2;  % Transition to the video presentation state
+% -------------------------------------------------------------------------
+%                             Message
+% -------------------------------------------------------------------------
+        case 1
+            Screen('TextSize', window_1, 50);
+            DrawFormattedText(window_1, ['The experiment will start shortly, ' ...
+                'please focus on the black cross'], 'center', 'center', textColor);
+            InitialDisplayTime = Screen('Flip', window_1);
+            WaitSecs(5);
+            state = 2;
 
+% -------------------------------------------------------------------------
+%                             Cross
+% -------------------------------------------------------------------------
         case 2
+            drawCross(window_1, W, H);
+            tFixation = Screen('Flip', window_1);
+            [ret, outlet] = MatNICMarkerSendLSL(1, outlet); % Cross event code to NIC
+            FixTime(trial_) = tFixation - start_exp;
+            disp('FixTime:')
+            disp(FixTime)
+            WaitSecs(3);
+            state = 3;  % Proceed to next state to play video
 
-            % 2. Load active stimulus
-            if trial_ >= 1 && trial_ <= 8
-                columnName = sprintf('Var%d', trial_);
-                trialIndex = randomizedTrials{1, columnName};  % Accesses the table correctly
-                file = videoList{trialIndex};  % Assumes trialIndex is a valid index in videoList
-            else
-                error('Trial number out of range.');
-            end
-            Video_name_trial{trial_}  = file;
-            moviename                 = fullfile(videoFolder,file);
-            movienames_trials{trial_} = moviename;
-            disp(moviename)
-            % Open movie file:
-            movie                     = Screen('OpenMovie', window1, moviename);
-            % Start playback engine:
-            Screen('PlayMovie', movie, 1);
-
-            BlankTime_(trial_)        = BlankTime-TriggerStart;
-            FixTime(trial_)           = tFixation-TriggerStart;
-            Trigger(trial_)           = TriggerStart;
-            
-            Screen('FillRect', window1, backgroundColor);
-
+% -------------------------------------------------------------------------
+%                             Video
+% -------------------------------------------------------------------------
         case 3
-            tic
-            [vid,VidTime]=present_video(window1,movie,dst_rect);
-            %             VideoTime=Screen('Flip', window1);
-            time_Video = VidTime - TriggerStart;
-            
-            % Load Score image
-            Video1Time(trial_)=time_Video;
-            %Variables for scoring
-            
-            % Open movie file:
-            movie_frame1=moviename
-            a=strsplit(movie_frame1,'.mp4')
-            movie_frame1=strcat(a{1,1},'_Moment.jpg')
-            vid = imread(movie_frame1);
-            vid = imresize( vid , 0.6);
-            imageSize = size(vid);
-            
-            % Make the new texture (i.e., the #1 video frame):
-            shift_left=(W/4);
-            shift_bottom=(H/4);
-            new_dst_rect = [shift_left shift_bottom shift_left*3 shift_bottom*2];
-            
-            % Release texture:
-%             Screen('Close', vid);
-            % Close movie:
-%             Screen('CloseMovie', movie);
-            
-            videoDisplay=Screen('MakeTexture', window1, vid);
-            
-
-            % Make the new texture (i.e., score image):
-            file2                      = 'Score_Valence.png';
-            img                        = imread(fullfile(imageFolder_score,file2));
-            img                        = imresize( img , 0.7);
-            imageSize                  = size(img);
-            shift_left                 = (W-imageSize(2))/2;
-            shift_bottom               = ((3/2)*H-imageSize(1))/2;
-            posimage                   = [shift_left shift_bottom shift_left+imageSize(2) shift_bottom+imageSize(1)];
+            % Load and play video
+            columnName = sprintf('Var%d', trial_);
+            trial_index = randomizedTrials.(columnName);
+            video_name{trial_} = videoList{randomizedTrials.(trial_)};
+            disp(video_name)
+            file = ['C:\Users\SpikeUrban\Documents\Exp5\task\task5\Scripts\Videos_session_1\',video_name{trial_}];
            
-            imagescoreDisplay = Screen('MakeTexture', window1, img);
-            pos = [new_dst_rect' posimage'];
-
-            % Draw circles for the regions
-            circleSize = 50;
-            for i = 1:numel(circlePositions)
-                Screen('FillOval', window, [255 100 0], ...
-                [circlePositions(i)-circleSize/2, windowRect(4)-circleSize, ...
-                circlePositions(i)+circleSize/2, windowRect(4)]);
-            end
-            
-            Screen('Flip', window);
-        
-            % Wait for mouse click inside one of the circles
-            clickedCircle = false;
-            while ~clickedCircle
-                [clicksX, ~, ~, ~] = GetClicks(window, 0);
-                for i = 1:numel(circlePositions)
-                    if clicksX > circlePositions(i)-circleSize/2 && ...
-                        clicksX < circlePositions(i)+circleSize/2
-                        clickedCircle = true;
-                        choiceValence(trial_) = clicksX;
-                    break;
-                    end
-                end
+            try
+                [movie, duration, fps, width, height, count, aspectRatio] = Screen('OpenMovie', window_1, file);
+                Screen('PlayMovie', movie, 1);  % Play movie at normal speed
+                videoStartTime = Screen('Flip', window_1);  % This will update the display and return the timestamp
+                [ret, outlet] = MatNICMarkerSendLSL(2, outlet); % Video event code to NIC
+                VideoTime(trial_) = videoStartTime - start_exp;  % Store the elapsed time since the experiment started
+                disp('VideoTime:')
+                disp(VideoTime)
+            catch ME
+                disp(['Failed to open movie file: ', file]);
+                rethrow(ME);
             end
 
-            % Draw the new texture immediately to screen:
-            Screen('DrawTextures', window1, imagescoreDisplay, [], pos);
-           
+                % Get the size of the screen
+                [screenWidth, screenHeight] = Screen('WindowSize', window_1);
+    
+                % Define new dimensions for the video, four times smaller
+                newWidth = screenWidth / 1.5;
+                newHeight = screenHeight / 1.5;
+    
+                % Calculate the position to center the smaller video on the screen
+                dst_rect = [...
+                    (screenWidth - newWidth) / 2, ...
+                    (screenHeight - newHeight) / 2, ...
+                    (screenWidth + newWidth) / 2, ...
+                    (screenHeight + newHeight) / 2];
+    
+            Screen('FillRect', window_1, backgroundColor);
             state = 4;
-            toc
+            %dst_rect = [0 0 W H];
 
-        case 4
-            % Update display:
-            tempo_4                   = GetSecs - TriggerStart;
-            ValenceTime               = Screen('Flip', window1);
-            SelectValenceTime(trial_) = ValenceTime-TriggerStart;
-            disp('Estado: 4');
-            time_to_vote              = 1;
-            state                     = 5;
-            rtValence(trial_)         = GetSecs - ValenceTime;
+            case 4
+                % Play and display the movie
+                tex = 0;
+                while ~KbCheck && tex~=-1  % Continue until keyboard press or movie ends
+                    [tex, pts] = Screen('GetMovieImage', window_1, movie, 1);
 
-        if (state == 5)
-            file_arousal               = 'Score_Arousal.png';
-            img_arousal                = imread(fullfile(imageFolder_score,file_arousal));
-            img_arousal                = imresize( img_arousal , 0.7);
-            imageSize                  = size(img_arousal);
-            shift_left                 = (W-imageSize(2))/2;
-            shift_bottom               = ((3/2)*H-imageSize(1))/2;
-            posimage                   = [shift_left shift_bottom shift_left+imageSize(2) shift_bottom+imageSize(1)];
-           
-            imagescoreDisplay = Screen('MakeTexture', window1, img_arousal);
-            pos = [new_dst_rect' posimage'];
+                    if tex > 0  % If a valid texture was returned
+                        % Draw the texture on the screen
+                        Screen('DrawTexture', window_1, tex, [], dst_rect);
+                        % Update the screen to show the current frame
+                        Screen('Flip', window_1);
+                        % Release the texture
+                        Screen('Close', tex);
+                    end
+                end
 
-            % Draw circles for the regions
-            circleSize = 50;
-            for i = 1:numel(circlePositions)
-                Screen('FillOval', window, [255 100 0], ...
-                [circlePositions(i)-circleSize/2, windowRect(4)-circleSize, ...
-                circlePositions(i)+circleSize/2, windowRect(4)]);
-            end
+        % Stop playback:
+        Screen('PlayMovie', movie, 0);
+        % Close movie:
+        Screen('CloseMovie', movie);
+        state = 5;  
+
+% -------------------------------------------------------------------------
+%                             Egocentric
+% -------------------------------------------------------------------------
+        case 5
+            ShowCursor('CrossHair'); % Crosshair, useful for precision tasks
+            centerX = screenWidth / 2;
+            centerY = screenHeight / 2;
+
+            % Set the mouse cursor to the center of the screen
+            SetMouse(centerX, centerY, window_1);
+
+            file_ego = 'C:\Users\SpikeUrban\Documents\Exp5\task\task5\Scripts\images\Egocentric\img_1.png';
+    
+            % Load the image from the file
+            imageArray_ego = imread(file_ego);
+    
+            % Make texture from the image array
+            texture = Screen('MakeTexture', window_1, imageArray_ego);
+
+             % Define the destination rectangle to draw the image in its original size
+            dst_rect_ego = CenterRectOnPointd([0 0 size(imageArray_ego, 2) size(imageArray_ego, 1)], centerX, centerY);
+    
+            % Draw the texture to the window
+            Screen('DrawTexture', window_1, texture, [], dst_rect_ego);
+    
+            % Flip the window to update the screen display
+            EgoStartTime = Screen('Flip', window_1);
+            [ret, outlet] = MatNICMarkerSendLSL(3, outlet); % Nav Ego event code to NIC
+            Ego_Time(trial_) = EgoStartTime - start_exp;  % Store the elapsed time since the experiment started
+            disp('Ego_Time:')
+            disp(Ego_Time)
+    
+            % Wait for a mouse click to proceed
+            [~, x, y] = GetClicks(window_1);
+            ego_coordinate_x(trial_) = x;  % Store x coordinate in ego_answer_x
+            ego_coordinate_y(trial_) = y;  % Store y coordinate in ego_answer_y
+            disp(['EGO coordinates X: ', num2str(x), ' Y: ', num2str(y)]);
+            %disp('EGO coordinates:')
+            %disp(ego_answer)
             
-            Screen('Flip', window);
-        
-            % Wait for mouse click inside one of the circles
-            clickedCircle = false;
-            while ~clickedCircle
-                [clicksX, ~, ~, ~] = GetClicks(window, 0);
-                for i = 1:numel(circlePositions)
-                    if clicksX > circlePositions(i)-circleSize/2 && ...
-                        clicksX < circlePositions(i)+circleSize/2
-                        clickedCircle = true;
-                        choiceArousal(trial_) = clicksX;
-                    break;
+            % Close the texture to free memory
+            Screen('Close', texture);
+    
+            % Update state or trial counters as necessary
+            state = 6; % Proceed to next state or end of trial
+
+% -------------------------------------------------------------------------
+%                             Allocentric
+% -------------------------------------------------------------------------
+        case 6
+            % Set the mouse cursor to the center of the screen
+            SetMouse(centerX, centerY, window_1);
+            
+            img_allo = imgList_allo{randomizedTrials.(trial_)};
+            disp(img_allo);
+            file_allo = ['C:\Users\SpikeUrban\Documents\Exp5\task\task5\Scripts\images\Allocentric\', img_allo];
+    
+            % Load the image from the file
+            imageArray_allo = imread(file_allo);
+    
+            % Make texture from the image array
+            texture = Screen('MakeTexture', window_1, imageArray_allo);
+    
+            % Draw the texture to the window
+            Screen('DrawTexture', window_1, texture, [], dst_rect);
+    
+            % Flip the window to update the screen display
+            AlloStartTime = Screen('Flip', window_1);
+            [ret, outlet] = MatNICMarkerSendLSL(4, outlet); % Nav Allo event code to NIC
+            Allo_Time(trial_) = AlloStartTime - start_exp;  % Store the elapsed time since the experiment started
+            disp('Allo_Time:')
+            disp(Allo_Time)
+            rt_ego(trial_) = Allo_Time(trial_) - Ego_Time(trial_);
+            disp('rt_ego:')
+            disp(rt_ego)
+    
+            % Wait for a mouse click to proceed
+            [~, x, y] = GetClicks(window_1);
+            allo_coordinate_x(trial_) = x;  % Store x coordinate in allo_answer_x
+            allo_coordinate_y(trial_) = y;  % Store y coordinate in allo_answer_y
+            disp(['ALLO coordinates X: ', num2str(x), ' Y: ', num2str(y)]);
+            
+            % Close the texture to free memory
+            Screen('Close', texture);
+    
+            % Update state or trial counters as necessary
+            state = 7; % Proceed to next state or end of trial
+
+% -------------------------------------------------------------------------
+%                             Valence
+% -------------------------------------------------------------------------
+        case 7 
+            % Set the mouse cursor to the center of the screen
+            SetMouse(centerX, centerY, window_1);
+            file_valence = 'C:\Users\SpikeUrban\Documents\Exp5\task\task5\Scripts\score_images\Score_Valence.png';
+
+            % Load the image from the file
+            imageArray_valence = imread(file_valence);
+
+            % Make texture from the image array
+            texture = Screen('MakeTexture', window_1, imageArray_valence);
+
+            % Define the destination rectangle to draw the image in its original size
+            dst_rect_valence = CenterRectOnPointd([0 0 size(imageArray_valence, 2) size(imageArray_valence, 1)], centerX, centerY);
+
+            % Set text size and font
+            Screen('TextSize', window_1, 40);
+            Screen('TextFont', window_1, 'Arial');
+
+            % Calculate positions for the circles
+            circle_radius = 45;
+            contour_thickness = 3;
+            space_between_circles = 175;
+            total_length = 8 * space_between_circles + 2 * (circle_radius + contour_thickness);
+            start_x = centerX - total_length / 2 + circle_radius + contour_thickness;
+            y_position = centerY + size(imageArray_valence, 1) / 2 + 100;
+
+            % Initialize variables for circle clicks
+            clicked_in_circle = false;
+            clicked_circle_index = 0;
+
+            while ~clicked_in_circle
+                % Draw the texture to the window
+                Screen('DrawTexture', window_1, texture, [], dst_rect_valence);
+
+                % Draw and number circles with contours
+                for i = 1:9
+                    current_x = start_x + (i-1) * space_between_circles;
+
+                    % Draw contour and circle
+                    Screen('FillOval', window_1, [0 0 0], ...
+                        [current_x - (circle_radius + contour_thickness), y_position - (circle_radius + contour_thickness), ...
+                        current_x + (circle_radius + contour_thickness), y_position + (circle_radius + contour_thickness)]);
+                    Screen('FillOval', window_1, [255 255 255], ...
+                        [current_x - circle_radius, y_position - circle_radius, ...
+                        current_x + circle_radius, y_position + circle_radius]);
+
+                     % Draw the number centered in the circle
+                    number_str = num2str(i);
+                    text_bounds = Screen('TextBounds', window_1, number_str);
+                    text_width = text_bounds(3) - text_bounds(1);
+                    text_height = text_bounds(4) - text_bounds(2);
+                    text_x = current_x - text_width / 2;
+                    text_y = y_position - text_height / 2000;
+                    DrawFormattedText(window_1, number_str, text_x, text_y, [0 0 0]);
+                end
+
+                % Update the display
+                ValenceTime = Screen('Flip', window_1);
+                [ret, outlet] = MatNICMarkerSendLSL(5, outlet); % Valence event code to NIC
+                Valence_Time(trial_) = ValenceTime - start_exp;  % Store the elapsed time since the experiment started
+                disp('Valence_Time:')
+                disp(Valence_Time)
+                rt_allo(trial_) = Valence_Time(trial_) - Allo_Time(trial_);
+                disp('rt_allo:')
+                disp(rt_allo)
+
+
+                % Check for mouse clicks
+                [clicks, x, y, whichButton] = GetClicks(window_1, 0);
+                if clicks
+                    for i = 1:9
+                        current_x = start_x + (i-1) * space_between_circles;
+                        distance_squared = (x - current_x)^2 + (y - y_position)^2;
+                        if distance_squared <= circle_radius^2
+                            clicked_circle_index = i;  % Update the clicked circle index
+                            clicked_in_circle = true;
+                            choiceValence(trial_) = i;
+                            disp('choice_Valence')
+                            disp(choiceValence)
+                            break;  % Exit the for loop since circle is found
+                        end
                     end
                 end
             end
+            state = 8;
 
-            % Draw the new texture immediately to screen:
-            Screen('DrawTextures', window1, imagescoreDisplay, [], pos);
-           
-            state = 6;
-            toc
-        end
+% -------------------------------------------------------------------------
+%                             Arousal
+% -------------------------------------------------------------------------            
+        case 8
+             SetMouse(centerX, centerY, window_1);
+             file_arousal = 'C:\Users\SpikeUrban\Documents\Exp5\task\task5\Scripts\score_images\Score_Arousal.png';
 
-        case 5
-            % Update display:
-            tempo_5                   = GetSecs - TriggerStart;
-            ArousalTime               = Screen('Flip', window1);
-            SelectArousalTime(trial_) = ArousalTime-TriggerStart;
-            disp('Estado: 4');
-            time_to_vote              = 1;
-            state                     = 6;
-            rtArousal(trial_) = GetSecs - ArousalTime;
+            % Load the image from the file
+            imageArray_arousal = imread(file_arousal);
+
+            % Make texture from the image array
+            texture = Screen('MakeTexture', window_1, imageArray_arousal);
+
+            % Define the destination rectangle to draw the image in its original size
+            dst_rect_arousal = CenterRectOnPointd([0 0 size(imageArray_arousal, 2) size(imageArray_arousal, 1)], centerX, centerY);
+
+            % Set text size and font
+            Screen('TextSize', window_1, 40);
+            Screen('TextFont', window_1, 'Arial');
+
+            % Calculate positions for the circles
+            circle_radius = 45;
+            contour_thickness = 3;
+            space_between_circles = 175;
+            total_length = 8 * space_between_circles + 2 * (circle_radius + contour_thickness);
+            start_x = centerX - total_length / 2 + circle_radius + contour_thickness;
+            y_position = centerY + size(imageArray_valence, 1) / 2 + 100;
+
+            % Initialize variables for circle clicks
+            clicked_in_circle = false;
+            clicked_circle_index = 0;
+
+            while ~clicked_in_circle
+                % Draw the texture to the window
+                Screen('DrawTexture', window_1, texture, [], dst_rect_arousal);
+
+                % Draw and number circles with contours
+                for i = 1:9
+                    current_x = start_x + (i-1) * space_between_circles;
+
+                    % Draw contour and circle
+                    Screen('FillOval', window_1, [0 0 0], ...
+                        [current_x - (circle_radius + contour_thickness), y_position - (circle_radius + contour_thickness), ...
+                        current_x + (circle_radius + contour_thickness), y_position + (circle_radius + contour_thickness)]);
+                    Screen('FillOval', window_1, [255 255 255], ...
+                        [current_x - circle_radius, y_position - circle_radius, ...
+                        current_x + circle_radius, y_position + circle_radius]);
+
+                     % Draw the number centered in the circle
+                    number_str = num2str(i);
+                    text_bounds = Screen('TextBounds', window_1, number_str);
+                    text_width = text_bounds(3) - text_bounds(1);
+                    text_height = text_bounds(4) - text_bounds(2);
+                    text_x = current_x - text_width / 2;
+                    text_y = y_position - text_height / 2000;
+                    DrawFormattedText(window_1, number_str, text_x, text_y, [0 0 0]);
+                end
+
+                % Update the display
+                ArousalTime = Screen('Flip', window_1);
+                [ret, outlet] = MatNICMarkerSendLSL(6, outlet); % Arousal event code to NIC
+                Arousal_Time(trial_) = ArousalTime - start_exp;  % Store the elapsed time since the experiment started
+                disp('Arousal_Time:')
+                disp(Arousal_Time)
+                rt_valence(trial_) = Arousal_Time(trial_) - Valence_Time(trial_);
+                disp('rt_valence:')
+                disp(rt_valence)
+
+                % Check for mouse clicks
+                [clicks, x, y, whichButton] = GetClicks(window_1, 0);
+                if clicks
+                    for i = 1:9
+                        current_x = start_x + (i-1) * space_between_circles;
+                        distance_squared = (x - current_x)^2 + (y - y_position)^2;
+                        if distance_squared <= circle_radius^2
+                            clicked_circle_index = i;  % Update the clicked circle index
+                            clicked_in_circle = true;
+                            choiceArousal(trial_) = i;
+                            disp('choice_Arousal')
+                            disp(choiceArousal)
+                            HideCursor;
+                            break;  % Exit the for loop since circle is found
+                        end
+                    end
+                end
+            end
+            state = 9;
+        
+        case 9
+            % Fill the screen with black color
+            Screen('FillRect', window_1, [255 255 255]);  % Assuming 0 is the color code for black
+            % Update the display to show the black screen
+            BlankTime = Screen('Flip', window_1);
+            [ret, outlet] = MatNICMarkerSendLSL(7, outlet); % Nav Ego event code to NIC
+
+            Blank_Time(trial_) = BlankTime - start_exp;  % Store the elapsed time since the experiment started
+            disp('Blank_Time:')
+            disp(Blank_Time)
+            rt_arousal(trial_) = Blank_Time(trial_) - Arousal_Time(trial_);
+            disp('rt_arousal:')
+            disp(rt_arousal)
+
+            % Wait for one and a half seconds
+            WaitSecs(1.5);
+            % Increase the trial counter if necessary, or reset any trial-specific variables
+            trial_ = trial_ + 1;  % Make sure this doesn't exceed your number of trials (n)
+            % Go back to state 2 for the next trial
+            state = 2;
+       
     end
 end
 
-%% End
+% -------------------------------------------------------------------------
+%                          Results file
+% -------------------------------------------------------------------------
 name_file = [results_path '/resultfile_' num2str(subID) '.xlsx'];
 
-% nm_ny_array=repmat(nm_ny,1,nTrials)
+M = [FixTime', VideoTime', Ego_Time', Allo_Time', ...
+    Valence_Time', Arousal_Time', Blank_Time', ego_coordinate_x', ego_coordinate_y', ...
+    allo_coordinate_x', allo_coordinate_y', rt_ego', rt_allo', rt_valence', rt_arousal', ... 
+    choiceValence', choiceArousal'];
 
-movienames_trials;
+T = [array2table(M), cell2table(video_name')];
 
-M = [BlankTime_', FixTime', Video1Time', SelectValenceTime', SelectArousalTime', ...
-    rtValence', rtArousal', choiceValence', choiceArousal',Trigger'];
-
-T = [array2table(M), cell2table(Video_name_trial')];
-
-T.Properties.VariableNames = {'BlankTime_','FixTime','Video1Time','SelectValenceTime','SelectArousalTime',...
-   'rtValence','rtArousal','choiceValence','choiceArousal', 'Trigger','Video_name_trial'};
+T.Properties.VariableNames = {'FixTime', 'VideoTime', 'Ego_Time', 'Allo_Time', ...
+    'Valence_Time', 'Arousal_Time', 'Blank_Time', 'ego_coordinate_x', 'ego_coordinate_y', ...
+    'allo_coordinate_x', 'allo_coordinate_y', 'rt_ego', 'rt_allo', 'rt_valence', 'rt_arousal', ... 
+    'choiceValence', 'choiceArousal', 'Video_name_trial'};
 writetable(T,name_file);
 
 sca;
+[ret, outlet] = MatNICMarkerSendLSL(8, outlet); % End event code to NIC
 
 
 
