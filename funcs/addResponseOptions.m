@@ -13,7 +13,7 @@ function addResponseOptions(windowPtr, responseOptions, boldOption)
     ];
     
     % Set the text parameters
-    Screen('TextSize', windowPtr, 24);
+    Screen('TextSize', windowPtr, 40);
     Screen('TextStyle', windowPtr, 0); % normal
     
     % Add the text to the screen

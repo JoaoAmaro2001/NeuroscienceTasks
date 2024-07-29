@@ -51,7 +51,7 @@ while 1
     firstDigit = str2double(num2str(floor(timetmp)));
     if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit && firstDigit ~= 0
         aux = 115;
-        beep
+        %beep
         % S(1) = load('gong');
         % S(2) = load('handel');
         % sound(S(1).y,S(1).Fs)
@@ -129,6 +129,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
+        [ret, outlet] = MatNICMarkerSendLSL(1, outlet);
     end
 
     % TR-DEPENDENT STIMULUS CONTROL 

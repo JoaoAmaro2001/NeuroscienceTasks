@@ -35,6 +35,11 @@ W=rect(RectRight); % screen width
 H=rect(RectBottom); % screen height
 Screen('FillRect',window1, backgroundColor); % Fills the screen with the background color
 Screen('Flip', window1); % Updates the screen (flip the offscreen buffer to the screen)
+%
+%--------------------------------------------------------------------------
+%                           EEG integration
+%--------------------------------------------------------------------------
+[ret, outlet] = MatNICMarkerConnectLSL('Matlab');
 
 % -------------------------------------------------------------------------
 %                         Setup the joysticks

@@ -3,7 +3,7 @@ clear, clc, close all
 settings_main;
 
 % Init
-tr_final    = (6*60)/2;    % Number of triggers
+tr_final    = (6*60)/4;    % Number of triggers
 tr_trigger  = 0;           % TR trigger counter
 slice_n     = 0;           % Refers to slice signals?
 flag_first  = 1;           % Flag for first trigger

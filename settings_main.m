@@ -51,6 +51,7 @@ Screen('Flip', window1);                        % Updates the screen (flip the o
 try
     % s = serialport('COM3', 57600); %The stimbox works at 57600 s/s
     s = serialport('COM6', 57600); %The stimbox works at 57600 s/s
+    s
     disp('Serial port communication is set.')
 catch
     s = [];
@@ -67,12 +68,6 @@ end
 % Slices               =   36
 % Pulse                =   50 ms
 % 1º start laptop; 2º start session in syncbox; 3º start mri machine
-
-% -------------------------------------------------------------------------
-%                           Handedness
-% -------------------------------------------------------------------------
-
-handedness = 1; % 1 for one handed or 2 for two handed joysticks
 
 % -------------------------------------------------------------------------
 %                         Setup MRI joysticks (two handed)
@@ -125,7 +120,7 @@ end
 % -------------------------------------------------------------------------
 cond_text = {'active','neutral'};
 
-textActiveStimuli = {
+textActiveStimuli_pt = {
     'Gosto de todo o tipo de jogos e passatempos.'
     'Sou mais sensível à crítica do que era antes.'
     'Ultimamente tenho-me sentido muito ansioso(a) e receoso(a).'
@@ -144,7 +139,24 @@ textActiveStimuli = {
     'Já não tenho qualquer sentimento.'
 };
 
-textNeutralStimuli = {
+textActiveStimuli_en = {'I like all kinds of games and pastimes.'
+'I am more sensitive to criticism than I used to be.'
+'Lately, I have been feeling very anxious and fearful.'
+'I cry easily.'
+'I am afraid of losing my sanity.'
+'I feel melancholic and depressed.'
+'I cannot understand what I read as well as I used to.'
+'I would like to end my life.'
+'In the morning, I feel particularly bad.'
+'I no longer have a close relationship with other people.'
+'I feel like I am about to break down.'
+'I am constantly afraid of saying or doing something wrong.'
+'Currently, I am much less interested in my love life than before.'
+'I often feel simply miserable.'
+'No matter how hard I try, I cannot think clearly.'
+'I no longer have any feelings.'};
+
+textNeutralStimuli_pt = {
     'Gosto de construir armários de cozinha.'
     'Gosto de assentar tijolos ou azulejos.'
     'Gostava de desenvolver um medicamento novo.'
@@ -163,12 +175,37 @@ textNeutralStimuli = {
     'Gosto de estudar o movimento dos planetas.'
 };
 
-responseOptions = {
+textNeutralStimuli_en = {'I like to build kitchen cabinets.'
+'I like to lay bricks or tiles.'
+'I would like to develop a new medicine.'
+'I like to study ways to reduce water pollution.'
+'I like to write books or plays.'
+'I like to play a musical instrument.'
+'I like to teach someone an exercise routine.'
+'I like to help people with personal or emotional problems.'
+'I like to buy and sell stocks and bonds.'
+'I like to manage a store.'
+'I like to develop a spreadsheet using computer software.'
+'I like to review records or forms.'
+'I like to repair household appliances.'
+'I like to raise fish.'
+'I like to conduct chemical experiments.'
+'I like to study the movement of planets.'};
+
+responseOptions_pt = {
     'Completamente Verdadeiro'
     'Maioritariamente Verdadeiro'
     'Parcialmente Verdadeiro'
     'Falso'
 };
+
+responseOptions_en = {
+    'Completely True'
+    'Mostly True'
+    'Partially True'
+    'False'
+};
+
 
 % -------------------------------------------------------------------------
 %                       Version and Testing
