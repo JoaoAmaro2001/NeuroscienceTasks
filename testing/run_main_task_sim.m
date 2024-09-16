@@ -1,5 +1,7 @@
 clear, clc, close all
+handedness = 1;
 settings_main_sim; % Load all the settings from the file
+
 
 % -------------------------------------------------------------------------
 %                           State Information:
@@ -81,7 +83,7 @@ while 1
         elseif state == 3
             text_input = textNeutralStimuli;
         end
-        if keyIsDown && keyCode(resp1)
+        if keyIsDown && keyCode(button1)
             boldOption              = 1;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -93,7 +95,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp2)
+        if keyIsDown && keyCode(button2)
             boldOption              = 2;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -105,7 +107,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp3)
+        if keyIsDown && keyCode(button3)
             boldOption              = 3;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -117,7 +119,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        if keyIsDown && keyCode(resp4)
+        if keyIsDown && keyCode(button4)
             boldOption              = 4;
             drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -129,7 +131,6 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
-        [ret, outlet] = MatNICMarkerSendLSL(1, outlet);
     end
 
     % TR-DEPENDENT STIMULUS CONTROL 
