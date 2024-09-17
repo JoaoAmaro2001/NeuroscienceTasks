@@ -57,22 +57,22 @@ button4           = 100;                 % Key - code for the fourth button
 cond_text = {'active','neutral'};
 
 textTraining = {
-    'Gosto de todo o tipo de jogos e passatempos.'
-    'Sou mais sensível à crítica do que era antes.'
-    'Ultimamente tenho me sentido muito ansioso(a) e receoso(a).'
-    'Choro facilmente.'
-    'Tenho medo de perder a minha sanidade mental.'
-    'Sinto-me melancólico(a) e deprimido(a).'
-    'Não consigo compreender tão bem o que leio como costumava.'
-    'Gostaria de pôr termo à minha vida.'
-    'De manhã sinto-me particularmente mal.'
-    'Já não tenho uma relação próxima com outras pessoas.'
-    'Sinto que estou prestes a desmoronar.'
-    'Tenho constantemente medo de dizer ou fazer algo errado.'
-    'Atualmente estou muito menos interessado(a) na minha vida amorosa do que anteriormente.'
-    'Muitas vezes sinto-me simplesmente miserável.'
-    'Por mais que tente, não consigo pensar com clareza.'
-    'Já não tenho qualquer sentimento.'
+    'Os pássaros cantam melodias ao pôr do sol.'
+    'O queijo azul tem um sabor intenso e peculiar.'
+    'As folhas dançam com o vento de outono.'
+    'O mar sussurra segredos antigos às rochas.'
+    'A lua cheia ilumina o caminho na floresta escura.'
+    'As estrelas piscam como diamantes no céu noturno.'
+    'O aroma do café recém-moído preenche a cozinha.'
+    'As abelhas trabalham diligentemente no jardim colorido.'
+    'O relógio antigo marca o tempo com precisão.'
+    'As nuvens formam padrões fascinantes no horizonte.'
+    'A chuva suave nutre as plantas sedentas.'
+    'O fogo crepita alegremente na lareira acolhedora.'
+    'As montanhas majestosas tocam o céu azul.'
+    'O riso das crianças ecoa pelo parque ensolarado.'
+    'A neve cobre a paisagem com um manto branco.'
+    'O perfume das flores de jasmim enche o ar noturno.'
 };
 
 responseOptions = {

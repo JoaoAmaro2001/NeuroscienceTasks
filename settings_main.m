@@ -1,12 +1,14 @@
 % -------------------------------------------------------------------------
 %                         Directories
 % -------------------------------------------------------------------------
-cd('C:\git\JoaoAmaro2001\psychiatry-study');
+cd('C:\github\JoaoAmaro2001\psychiatry-study')
+% cd('C:\git\JoaoAmaro2001\psychiatry-study');
 orip = pwd; % The root directory for scripts and images
 addpath(genpath(orip));
-stim_path           = fullfile(orip,'stimuli');
-results_path        = fullfile(orip,'results');
-resting_state_path  = fullfile(orip,'resting_state');
+stim_path          = fullfile(orip,'stimuli'); mkdir(stim_path)
+log_path           = fullfile(orip,'results'); mkdir(log_path)
+event_path         = fullfile(orip,'events');  mkdir(event_path)
+resting_state_path = fullfile(orip,'resting_state'); mkdir(resting_state_path)
 
 % -------------------------------------------------------------------------
 %                         Screen Setup

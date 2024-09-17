@@ -3,7 +3,7 @@
 % -------------------------------------------------------------------------
 
 % orip = uigetdir('C:\'); % Use the GUI
-cd('C:\git\JoaoAmaro2001\psychiatry-study');
+cd('C:\github\JoaoAmaro2001\psychiatry-study');
 orip = pwd;
 addpath(genpath(orip));
 
@@ -20,8 +20,8 @@ addpath(genpath(orip));
 %                            Check Devices
 % -------------------------------------------------------------------------
 
-devices = PsychHID('Devices') % Get a list of all human-interface devices (HID) 
-clear all
+% devices = PsychHID('Devices') % Get a list of all human-interface devices (HID) 
+% clear all
 
 % -------------------------------------------------------------------------
 %                         Initiate Training
