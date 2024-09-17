@@ -281,4 +281,215 @@ PsychtoolboxVersion:     '3.0.19 - Flavor: Manual Install, 13-Feb-2024 12:07:36'
 
 - Tower Computer
 ```
+Host Name:                 DESKTOP-UJUVJ70
+OS Name:                   Microsoft Windows 10 Education
+OS Version:                10.0.19045 N/A Build 19045
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Standalone Workstation
+OS Build Type:             Multiprocessor Free
+Registered Owner:          Windows User
+Registered Organization:   
+Product ID:                00328-00205-96228-AA809
+Original Install Date:     25/10/2021, 17:08:40
+System Boot Time:          06/09/2024, 03:55:31
+System Manufacturer:       Micro-Star International Co., Ltd.
+System Model:              MS-7B48
+System Type:               x64-based PC
+Processor(s):              1 Processor(s) Installed.
+                           [01]: Intel64 Family 6 Model 158 Stepping 10 GenuineIntel ~3696 Mhz
+BIOS Version:              American Megatrends Inc. 2.20, 27/10/2017
+Windows Directory:         C:\Windows
+System Directory:          C:\Windows\system32
+Boot Device:               \Device\HarddiskVolume2
+System Locale:             en-us;English (United States)
+Input Locale:              pt;Portuguese (Portugal)
+Time Zone:                 (UTC+00:00) Dublin, Edinburgh, Lisbon, London
+Total Physical Memory:     32 728 MB
+Available Physical Memory: 15 827 MB
+Virtual Memory: Max Size:  37 592 MB
+Virtual Memory: Available: 16 436 MB
+Virtual Memory: In Use:    21 156 MB
+Page File Location(s):     C:\pagefile.sys
+Domain:                    WORKGROUP
+Logon Server:              \\DESKTOP-UJUVJ70
+Hotfix(s):                 32 Hotfix(s) Installed.
+                           [01]: KB5042097
+                           [02]: KB5030841
+                           [03]: KB4562830
+                           [04]: KB5003791
+                           [05]: KB5011048
+                           [06]: KB5012170
+                           [07]: KB5015684
+                           [08]: KB5043064
+                           [09]: KB5006753
+                           [10]: KB5007273
+                           [11]: KB5011352
+                           [12]: KB5011651
+                           [13]: KB5014032
+                           [14]: KB5014035
+                           [15]: KB5014671
+                           [16]: KB5015895
+                           [17]: KB5016705
+                           [18]: KB5018506
+                           [19]: KB5020372
+                           [20]: KB5022924
+                           [21]: KB5023794
+                           [22]: KB5025315
+                           [23]: KB5028318
+                           [24]: KB5029709
+                           [25]: KB5031539
+                           [26]: KB5036447
+                           [27]: KB5037018
+                           [28]: KB5037995
+                           [29]: KB5039336
+                           [30]: KB5041579
+                           [31]: KB5043935
+                           [32]: KB5005699
+Network Card(s):           3 NIC(s) Installed.
+                           [01]: Realtek PCIe GbE Family Controller
+                                 Connection Name: Ethernet
+                                 DHCP Enabled:    Yes
+                                 DHCP Server:     10.105.4.4
+                                 IP address(es)
+                                 [01]: 10.105.150.66
+                                 [02]: fe80::c1f7:ca5b:ed4c:7ad1
+                           [02]: Bluetooth Device (Personal Area Network)
+                                 Connection Name: Bluetooth Network Connection 3
+                                 Status:          Media disconnected
+                           [03]: TP-Link Wireless N PCI Express Adapter
+                                 Connection Name: Wi-Fi 3
+                                 Status:          Media disconnected
+Hyper-V Requirements:      VM Monitor Mode Extensions: Yes
+                           Virtualization Enabled In Firmware: Yes
+                           Second Level Address Translation: Yes
+                           Data Execution Prevention Available: Yes
+```
+```
+MATLAB Version: 24.1.0.2628055 (R2024a) Update 4
+MATLAB License Number: 41137037
+Operating System: Microsoft Windows 10 Education Version 10.0 (Build 19045)
+Java Version: Java 1.8.0_202-b08 with Oracle Corporation Java HotSpot(TM) 64-Bit Server VM mixed mode
+-----------------------------------------------------------------------------------------------------
+MATLAB                                                Version 24.1        (R2024a)                
+Simulink                                              Version 24.1        (R2024a)                
+5G Toolbox                                            Version 24.1        (R2024a)                
+AUTOSAR Blockset                                      Version 24.1        (R2024a)                
+Aerospace Blockset                                    Version 24.1        (R2024a)                
+Aerospace Toolbox                                     Version 24.1        (R2024a)                
+Antenna Toolbox                                       Version 24.1        (R2024a)                
+Audio Toolbox                                         Version 24.1        (R2024a)                
+Automated Driving Toolbox                             Version 24.1        (R2024a)                
+Bioinformatics Toolbox                                Version 24.1        (R2024a)                
+Bluetooth Toolbox                                     Version 24.1        (R2024a)                
+C2000 Microcontroller Blockset                        Version 24.1        (R2024a)                
+Communications Toolbox                                Version 24.1        (R2024a)                
+Computer Vision Toolbox                               Version 24.1        (R2024a)                
+Control System Toolbox                                Version 24.1        (R2024a)                
+Curve Fitting Toolbox                                 Version 24.1        (R2024a)                
+DDS Blockset                                          Version 24.1        (R2024a)                
+DSP HDL Toolbox                                       Version 24.1        (R2024a)                
+DSP System Toolbox                                    Version 24.1        (R2024a)                
+Data Acquisition Toolbox                              Version 24.1        (R2024a)                
+Database Toolbox                                      Version 24.1        (R2024a)                
+Datafeed Toolbox                                      Version 24.1        (R2024a)                
+DatapixxToolbox                                       Version 0.9,        Aug                     
+Deep Learning HDL Toolbox                             Version 24.1        (R2024a)                
+Deep Learning Toolbox                                 Version 24.1        (R2024a)                
+EEGLAB Toolbox to process EEG data                    Version -           see                     
+EEGLAB Toolbox to process EEG data                    Version -           see                     
+Econometrics Toolbox                                  Version 24.1        (R2024a)                
+Embedded Coder                                        Version 24.1        (R2024a)                
+FieldTrip                                             Version unknown     www.fieldtriptoolbox.org
+Filter Design HDL Coder                               Version 24.1        (R2024a)                
+Financial Instruments Toolbox                         Version 24.1        (R2024a)                
+Financial Toolbox                                     Version 24.1        (R2024a)                
+Fixed-Point Designer                                  Version 24.1        (R2024a)                
+Fuzzy Logic Toolbox                                   Version 24.1        (R2024a)                
+GPU Coder                                             Version 24.1        (R2024a)                
+Global Optimization Toolbox                           Version 24.1        (R2024a)                
+HDL Coder                                             Version 24.1        (R2024a)                
+HDL Verifier                                          Version 24.1        (R2024a)                
+Image Acquisition Toolbox                             Version 24.1        (R2024a)                
+Image Processing Toolbox                              Version 24.1        (R2024a)                
+Industrial Communication Toolbox                      Version 24.1        (R2024a)                
+Instrument Control Toolbox                            Version 24.1        (R2024a)                
+LTE Toolbox                                           Version 24.1        (R2024a)                
+Lidar Toolbox                                         Version 24.1        (R2024a)                
+MATLAB Coder                                          Version 24.1        (R2024a)                
+MATLAB Compiler                                       Version 24.1        (R2024a)                
+MATLAB Compiler SDK                                   Version 24.1        (R2024a)                
+MATLAB Report Generator                               Version 24.1        (R2024a)                
+MATLAB Test                                           Version 24.1        (R2024a)                
+Mapping Toolbox                                       Version 24.1        (R2024a)                
+Medical Imaging Toolbox                               Version 24.1        (R2024a)                
+Mixed-Signal Blockset                                 Version 24.1        (R2024a)                
+Model Predictive Control Toolbox                      Version 24.1        (R2024a)                
+Model-Based Calibration Toolbox                       Version 24.1        (R2024a)                
+Motor Control Blockset                                Version 24.1        (R2024a)                
+Navigation Toolbox                                    Version 24.1        (R2024a)                
+Optimization Toolbox                                  Version 24.1        (R2024a)                
+Parallel Computing Toolbox                            Version 24.1        (R2024a)                
+Partial Differential Equation Toolbox                 Version 24.1        (R2024a)                
+Phased Array System Toolbox                           Version 24.1        (R2024a)                
+Powertrain Blockset                                   Version 24.1        (R2024a)                
+Predictive Maintenance Toolbox                        Version 24.1        (R2024a)                
+Psychtoolbox                                          Version 3.0.18      13 October              
+RF Blockset                                           Version 24.1        (R2024a)                
+RF PCB Toolbox                                        Version 24.1        (R2024a)                
+RF Toolbox                                            Version 24.1        (R2024a)                
+ROS Toolbox                                           Version 24.1        (R2024a)                
+Radar Toolbox                                         Version 24.1        (R2024a)                
+Reinforcement Learning Toolbox                        Version 24.1        (R2024a)                
+Requirements Toolbox                                  Version 24.1        (R2024a)                
+Risk Management Toolbox                               Version 24.1        (R2024a)                
+Robotics System Toolbox                               Version 24.1        (R2024a)                
+Robust Control Toolbox                                Version 24.1        (R2024a)                
+Satellite Communications Toolbox                      Version 24.1        (R2024a)                
+Sensor Fusion and Tracking Toolbox                    Version 24.1        (R2024a)                
+SerDes Toolbox                                        Version 24.1        (R2024a)                
+Signal Integrity Toolbox                              Version 24.1        (R2024a)                
+Signal Processing Toolbox                             Version 24.1        (R2024a)                
+SimBiology                                            Version 24.1        (R2024a)                
+SimEvents                                             Version 24.1        (R2024a)                
+Simscape                                              Version 24.1        (R2024a)                
+Simscape Battery                                      Version 24.1        (R2024a)                
+Simscape Driveline                                    Version 24.1        (R2024a)                
+Simscape Electrical                                   Version 24.1        (R2024a)                
+Simscape Fluids                                       Version 24.1        (R2024a)                
+Simscape Multibody                                    Version 24.1        (R2024a)                
+Simulink 3D Animation                                 Version 24.1        (R2024a)                
+Simulink Check                                        Version 24.1        (R2024a)                
+Simulink Code Inspector                               Version 24.1        (R2024a)                
+Simulink Coder                                        Version 24.1        (R2024a)                
+Simulink Compiler                                     Version 24.1        (R2024a)                
+Simulink Control Design                               Version 24.1        (R2024a)                
+Simulink Coverage                                     Version 24.1        (R2024a)                
+Simulink Design Optimization                          Version 24.1        (R2024a)                
+Simulink Design Verifier                              Version 24.1        (R2024a)                
+Simulink Desktop Real-Time                            Version 24.1        (R2024a)                
+Simulink Fault Analyzer                               Version 24.1        (R2024a)                
+Simulink PLC Coder                                    Version 24.1        (R2024a)                
+Simulink Real-Time                                    Version 24.1        (R2024a)                
+Simulink Report Generator                             Version 24.1        (R2024a)                
+Simulink Test                                         Version 24.1        (R2024a)                
+SoC Blockset                                          Version 24.1        (R2024a)                
+Spreadsheet Link                                      Version 24.1        (R2024a)                
+Stateflow                                             Version 24.1        (R2024a)                
+Statistics and Machine Learning Toolbox               Version 24.1        (R2024a)                
+Symbolic Math Toolbox                                 Version 24.1        (R2024a)                
+System Composer                                       Version 24.1        (R2024a)                
+System Identification Toolbox                         Version 24.1        (R2024a)                
+Text Analytics Toolbox                                Version 24.1        (R2024a)                
+UAV Toolbox                                           Version 24.1        (R2024a)                
+Vehicle Dynamics Blockset                             Version 24.1        (R2024a)                
+Vehicle Network Toolbox                               Version 24.1        (R2024a)                
+Vision HDL Toolbox                                    Version 24.1        (R2024a)                
+WLAN Toolbox                                          Version 24.1        (R2024a)                
+Wavelet Toolbox                                       Version 24.1        (R2024a)                
+Wireless HDL Toolbox                                  Version 24.1        (R2024a)                
+Wireless Testbench                                    Version 24.1        (R2024a)                
+ans =
+    '3.0.18 - Flavor: beta - Corresponds to SVN Revision 12862
+     For more info visit:
+     https://github.com/Psychtoolbox-3/Psychtoolbox-3'
 ```
