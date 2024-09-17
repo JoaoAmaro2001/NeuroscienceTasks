@@ -1,13 +1,8 @@
 % -------------------------------------------------------------------------
 %                             Directories
 % ------------------------------------------------------------------------- 
-cd('C:\github\JoaoAmaro2001\psychiatry-study');
-orip = pwd; % The root directory for scripts and images
-addpath(genpath(orip));
-stim_path          = fullfile(orip,'stimuli'); mkdir(stim_path)
 log_path           = fullfile(orip,'results'); mkdir(log_path)
 event_path         = fullfile(orip,'events');  mkdir(event_path)
-resting_state_path = fullfile(orip,'resting_state'); mkdir(resting_state_path)
 
 % -------------------------------------------------------------------------
 %                             SETUP SCREEN
@@ -22,7 +17,7 @@ Screen('Preference','VisualDebugLevel', 0); % Minimum amount of diagnostic outpu
 % % ------------------------------------------------------------------------- 
 whichScreenMin = min(Screen('Screens')); % Get the screen numbers
 [screenWidth, screenHeight] = Screen('WindowSize', whichScreenMin); % Get the screen size
-[window1, rect] = Screen('OpenWindow', whichScreenMin, backgroundColor, [0 0 screenWidth/2, screenHeight/2]);
+[window1, rect] = Screen('OpenWindow', whichScreenMin, backgroundColor, [0 0 screenWidth, screenHeight]);
 % -------------------------------------------------------------------------
 %                             2 SCREENS
 % ------------------------------------------------------------------------- 

@@ -18,12 +18,20 @@ Screen('Flip',window1);
 tic;
 while 1 
 
+    % MANUAL CONTROL 
+    [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
+    if keyIsDown
+        if keyCode(terminateKey) % Check if the terminate key was pressed
+            break % Exit the function or script
+        end
+    end
+
     % SERIAL PORT COMMUNICATION
     timetmp = toc;
     flush(s)
     aux = read(s,1,'uint8'); % Reads one sample
 
-    if aux == 100 % Signal for slice (100 is the ascii code for 'd')
+    if aux == 100 % Signal for slice (100 is the ascii code for 'd') - ignore
         slice_n = slice_n + 1;
     end
 

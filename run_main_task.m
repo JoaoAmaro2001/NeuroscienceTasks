@@ -1,8 +1,8 @@
 clear, clc, close all
 sub_id     = input("Write the participant's id code:\n", 's');
 task       = 'sentences';
-lang       = '_en';  % _en for english and _pt for portuguese
-handedness = 2;      % 1 for one handed or 2 for two handed joysticks
+lang       = '_pt';  % _en for english and _pt for portuguese
+handedness = 1;      % 1 for one handed or 2 for two handed joysticks
 settings_main;       % Load all the settings from the file
 
 % -------------------------------------------------------------------------
@@ -14,10 +14,10 @@ settings_main;       % Load all the settings from the file
 % -------------------------------------------------------------------------
 
 % Init
-tr_final    = (8*32 + 8*32)/2;      % Number of triggers
-tr_trigger  = -1;                   % TR trigger counter (There are 261 -> ((8*32 + 8*32 + 10)/2) = 8.7 mins)
+tr_final    = (8*32 + 8*32)/2;      % Number of triggers == 256
+tr_trigger  = -1;                   % TR trigger counter (There are 256 -> ((8*32 + 8*32 + 10)/2) = 8.7 mins)
 tr_N        = -1;                   % tr counter inside loop for each block
-tr_n        = -1;                   % tr counter inside loop for each stimulus
+tr_n        = -1;                   % tr counter inside loop for each stimulus22
 tr_cross    = 0;                    % tr counter for cross
 num_cross   = 0;                    % Counter for the cross state
 state       = 2;                    % Gets the state information
@@ -54,19 +54,37 @@ Screen('DrawText',window1,'A experiência começará em breve', (W/3), (H/2), te
 Screen('Flip',window1);
 WaitSecs(5)
 
+% BLANK SCREEN
+Screen(window1, 'FillRect', backgroundColor);
+Screen('Flip', window1); % Flip the screen (don't clear the buffer)
+disp('Estado: Ecrã em branco')
+
 % Start the experiment
-tic;
 while 1
 
-    % BLANK SCREEN
-    Screen(window1, 'FillRect', backgroundColor);
-    Screen('Flip', window1); % Flip the screen (don't clear the buffer)
-    disp('Estado: Ecrã em branco')
-
-    % SERIAL PORT COMMUNICATION
-    timetmp = toc;
-    flush(s)
-    aux = read(s,1,'uint8');
+    % FMRI SERIAL PORT COMMUNICATION
+    if tr_trigger == -1
+        flush(s)
+        aux = read(s,1,'uint8'); disp(aux);
+        prevDigit = -1;  % Initialize prevDigit to a value that firstDigit will never be
+        tic;
+    else
+        % SIMULATING SERIAL PORT COMMUNICATION
+        timetmp = toc;
+        firstDigit = str2double(num2str(floor(timetmp)));
+        if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit && firstDigit ~= 0
+            aux = 115;
+            % beep
+            % S(1) = load('gong');
+            % S(2) = load('handel');
+            % sound(S(1).y,S(1).Fs)
+            % sound(S(2).y,S(2).Fs)
+            toc
+        else
+            aux = [];
+        end
+        prevDigit = firstDigit; % Update prevDigit
+    end
 
     % MANUAL CONTROL 
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
@@ -80,7 +98,8 @@ while 1
     end
     
     % BUTTON CHECK CONTROL CONTROL (both types of joystick)
-    if (state == 2 || state == 3) && flag_resp && handedness == 1
+    if (state == 2 || state == 3) && flag_resp && handedness == 1 && tr_trigger ~= -1
+        [keyIsDown, ~, keyCode] = KbCheck; 
         if state == 2
             text_input = eval(strcat('textActiveStimuli', lang));
             trialnumi  = trial_act;
@@ -88,57 +107,61 @@ while 1
             text_input = eval(strcat('textNeutralStimuli', lang));
             trialnumi  = trial_neu;
         end
-        [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
-        if keyIsDown
-            if keyCode(button1)
-                boldOption              = 1;
-                drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
-                addResponseOptions(window1, eval(strcat('responseOptions', lang)), boldOption)
-                rt_end                  = GetSecs;
-                rt                      = rt_end - rt_beg;
-                rt_num(trial_num)       = rt;
-                res_num(trial_num)      = 1;  
-                res_txt{trial_num}      = responseOptions{1}; 
-                flag_resp               = 0;
-                boldOption              = [];
-            elseif keyCode(button2)
-                boldOption              = 2;
-                drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
-                addResponseOptions(window1, responseOptions, boldOption)
-                rt_end                  = GetSecs;
-                rt                      = rt_end - rt_beg;
-                rt_num(trial_num)       = rt;
-                res_num(trial_num)      = 2;  
-                res_txt{trial_num}      = responseOptions{2}; 
-                flag_resp               = 0;
-                boldOption              = [];
-            elseif keyCode(button3)
-                boldOption              = 3;
-                drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
-                addResponseOptions(window1, responseOptions, boldOption)
-                rt_end                  = GetSecs;
-                rt                      = rt_end - rt_beg;
-                rt_num(trial_num)       = rt;
-                res_num(trial_num)      = 3;  
-                res_txt{trial_num}      = responseOptions{3}; 
-                flag_resp               = 0;
-                boldOption              = [];
-            elseif keyCode(button4)
-                boldOption              = 4;
-                drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
-                addResponseOptions(window1, responseOptions, boldOption)
-                rt_end                  = GetSecs;
-                rt                      = rt_end - rt_beg;
-                rt_num(trial_num)       = rt;
-                res_num(trial_num)      = 4;  
-                res_txt{trial_num}      = responseOptions{4}; 
-                flag_resp               = 0;
-                boldOption              = [];
-            end
+        if keyIsDown && keyCode(button1)
+            disp('button1-------------------------------------------')
+            boldOption              = 1;
+            drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
+            addResponseOptions(window1, responseOptions, boldOption)
+            rt_end                  = GetSecs;
+            rt                      = rt_end - rt_beg;
+            rt_num(trial_num)       = rt;
+            res_num(trial_num)      = 1;  
+            res_txt{trial_num}      = responseOptions{1}; 
+            flag_resp               = 0;
+            boldOption              = [];
+        end
+        if keyIsDown && keyCode(button2)
+            disp('button2-------------------------------------------')
+            boldOption              = 2;
+            drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
+            addResponseOptions(window1, responseOptions, boldOption)
+            rt_end                  = GetSecs;
+            rt                      = rt_end - rt_beg;
+            rt_num(trial_num)       = rt;
+            res_num(trial_num)      = 2;  
+            res_txt{trial_num}      = responseOptions{2}; 
+            flag_resp               = 0;
+            boldOption              = [];
+        end
+        if keyIsDown && keyCode(button3)
+            disp('button3-------------------------------------------')
+            boldOption              = 3;
+            drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
+            addResponseOptions(window1, responseOptions, boldOption)
+            rt_end                  = GetSecs;
+            rt                      = rt_end - rt_beg;
+            rt_num(trial_num)       = rt;
+            res_num(trial_num)      = 3;  
+            res_txt{trial_num}      = responseOptions{3}; 
+            flag_resp               = 0;
+            boldOption              = [];
+        end
+        if keyIsDown && keyCode(button4)
+            disp('button4-------------------------------------------')
+            boldOption              = 4;
+            drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
+            addResponseOptions(window1, responseOptions, boldOption)
+            rt_end                  = GetSecs;
+            rt                      = rt_end - rt_beg;
+            rt_num(trial_num)       = rt;
+            res_num(trial_num)      = 4;  
+            res_txt{trial_num}      = responseOptions{4}; 
+            flag_resp               = 0;
+            boldOption              = [];
         end
     end
 
-    if (state == 2 || state == 3) && flag_resp && handedness == 2
+    if (state == 2 || state == 3) && flag_resp && handedness == 2 && tr_trigger ~= -1
         if state == 2
             text_input = eval(strcat('textActiveStimuli', lang));
         elseif state == 3
@@ -146,7 +169,7 @@ while 1
         end
         if aux == button1
             boldOption              = 1;
-            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -157,7 +180,7 @@ while 1
             boldOption              = [];
         elseif aux == button2
             boldOption              = 2;
-            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -168,7 +191,7 @@ while 1
             boldOption              = [];
         elseif aux == button3
             boldOption              = 3;
-            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -179,7 +202,7 @@ while 1
             boldOption              = [];
         elseif aux == button4
             boldOption              = 4;
-            drawText(window1, text_input, trial_num, W, H, backgroundColor, textColor)
+            drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
             rt_end                  = GetSecs;
             rt                      = rt_end - rt_beg;
@@ -193,11 +216,10 @@ while 1
 
     % TR-DEPENDENT STIMULUS CONTROL 
     if ~isempty(aux) && (aux == 115)
-        toc
         if tr_trigger == -1
             state     = 2;
             start_exp = GetSecs;
-            fprintf('First trigger received\n')
+            fprintf('First trigger received - beginning volumes\n')
         end
         if tr_trigger == tr_final % end trigger
             break
@@ -243,13 +265,14 @@ while 1
                 end
                 %---------------------------------------------------------------------------------------------------------------
                 if tr_n == 4 % 4 because tr_n=1 signifies beginning of first TR
+                    stim_input = eval(strcat('textActiveStimuli', lang));
                     % Fill variables for the log file
                     if rt_num(trial_num) == 0
                         rt_num(trial_num)   = NaN;
                         res_num(trial_num)  = NaN;         
                         trial(trial_num)    = trial_num;   
                         btrial(trial_num)   = trial_act;
-                        stim_txt{trial_num} = textActiveStimuli{trial_act};         
+                        stim_txt{trial_num} = stim_input{trial_act};         
                         res_txt{trial_num}  = "";
                         cond{trial_num}     = cond_text{1};
                     else
@@ -257,7 +280,7 @@ while 1
                         res_num(trial_num)  = res_num(trial_num);
                         trial(trial_num)    = trial_num;
                         btrial(trial_num)   = trial_act;
-                        stim_txt{trial_num} = textActiveStimuli{trial_act};
+                        stim_txt{trial_num} = stim_input{trial_act};
                         res_txt{trial_num}  = res_txt{trial_num};
                         cond{trial_num}     = cond_text{1};
                     end
@@ -269,14 +292,15 @@ while 1
                     flag_resp   = 1;
                 end
                 if flag_screen && tr_N ~= 16
-                    drawText(window1, textActiveStimuli, trial_act, W, H, backgroundColor, textColor)
+                    drawText(window1, eval(strcat('textActiveStimuli', lang)), trial_act, W, H, backgroundColor, textColor)
                     addResponseOptions(window1, responseOptions, boldOption)
                     rt_beg = GetSecs;
                     flag_screen = 0;
                 end
                 if tr_N == 16 % 4*4 TRs
                     state = 1;
-                    tr_N = 0;
+                    tr_N = -1;
+                    tr_n = -1;                    
                     % Go to the cross
                     num_cross = num_cross + 1;
                     drawCross(window1,W,H);
@@ -297,13 +321,14 @@ while 1
                 T_events(tr_trigger,:) = newRow;
                 %---------------------------------------------------------------------------------------------------------------
                 if tr_n == 4
+                    stim_input = eval(strcat('textNeutralStimuli', lang));
                     % Fill variables for the log file
                     if rt_num(trial_num) == 0
                         rt_num(trial_num)   = NaN;
                         res_num(trial_num)  = NaN;         
                         trial(trial_num)    = trial_num;
                         btrial(trial_num)   = trial_neu;
-                        stim_txt{trial_num} = textNeutralStimuli{trial_neu};         
+                        stim_txt{trial_num} = stim_input{trial_neu};         
                         res_txt{trial_num}   = "";
                         cond{trial_num}     = cond_text{1};
                     else
@@ -311,7 +336,7 @@ while 1
                         res_num(trial_num)  = res_num(trial_num);
                         trial(trial_num)    = trial_num;
                         btrial(trial_num)   = trial_neu;
-                        stim_txt{trial_num} = textNeutralStimuli{trial_neu};
+                        stim_txt{trial_num} = stim_input{trial_neu};
                         res_txt{trial_num}  = res_txt{trial_num};
                         cond{trial_num}     = cond_text{2};
                     end
@@ -323,15 +348,16 @@ while 1
                     flag_resp   = 1;
                 end
                 if flag_screen && tr_N ~= 16
-                    drawText(window1, textNeutralStimuli, trial_neu, W, H, backgroundColor, textColor)     
+                    drawText(window1, eval(strcat('textNeutralStimuli', lang)), trial_neu, W, H, backgroundColor, textColor)     
                     addResponseOptions(window1, responseOptions, boldOption)
                     rt_beg = GetSecs;
                     flag_screen = 0;
                 end
                 if tr_N == 16 % 4*4 TRs
                     state = 1;
-                    tr_N = 0;
-                    % Go to the cross
+                    tr_N = -1;
+                    tr_n = -1;                    
+                    % Go to the cross34
                     num_cross = num_cross + 1;
                     drawCross(window1,W,H);
                     Screen('Flip', window1);

@@ -47,6 +47,7 @@ Screen('Flip', window1);                        % Updates the screen (flip the o
 try
     % s = serialport('COM3', 57600); %The stimbox works at 57600 s/s
     s = serialport('COM6', 57600); %The stimbox works at 57600 s/s
+    s.Timeout = 0.001;
     disp('Serial port communication is set.')
 catch
     s = [];

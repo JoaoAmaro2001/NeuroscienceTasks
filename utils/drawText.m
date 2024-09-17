@@ -1,5 +1,5 @@
 function drawText(windowToAdd, textToAdd, trial_num, W, H, backgroundColor, textColor)
-    Screen('TextSize', windowToAdd, 50);
+    Screen('TextSize', windowToAdd, 70);
     text = textToAdd{trial_num};
     [textWidth, textHeight] = RectSize(Screen('TextBounds', windowToAdd, text));
     xPos = (W - textWidth) / 2;
