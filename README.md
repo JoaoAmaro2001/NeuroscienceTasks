@@ -1,5 +1,3 @@
-# <center>How to use these scripts
-
 ## General Overview
 This repository contains MATLAB scripts for running an experimental task related to psychiatry in an fMRI environment. The experiment includes stimuli presentation, response recording, and synchronization with fMRI triggers. The repository is organized to facilitate running the task, managing stimuli, and configuring the experiment for different setups (e.g., different computers or fMRI centers).
 
