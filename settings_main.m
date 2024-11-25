@@ -1,7 +1,7 @@
-% -------------------------------------------------------------------------
+2% -------------------------------------------------------------------------
 %                         Directories
 % -------------------------------------------------------------------------
-log_path           = fullfile(orip,'results'); mkdir(log_path)
+log_path           = fullfile(orip,'log'); mkdir(log_path)
 event_path         = fullfile(orip,'events');  mkdir(event_path)
 
 % -------------------------------------------------------------------------
@@ -45,8 +45,9 @@ Screen('Flip', window1);                        % Updates the screen (flip the o
 %     False for synchronization mode. True for simulation mode.
 
 try
-    % s = serialport('COM3', 57600); %The stimbox works at 57600 s/s
-    s = serialport('COM6', 57600); %The stimbox works at 57600 s/s
+    % s = serialport('COM3', 57600); % The stimbox works at 57600 s/s
+    s = serialport('COM6', 57600);   % The stimbox works at 57600 s/s
+    s.Timeout = 0.05;                % Timeout to fetch real TR signal
     disp('Serial port communication is set.')
 catch
     s = [];
@@ -59,7 +60,7 @@ end
 % Trigger on slice     =   Each
 % Trigger on volume    =   1
 % TR                   =   2000 ms
-% Volumes              =   256 -> dummies do not send tr
+% Volumes              =   256 -> dummies do not send (1st tr trigger is tr nº0)
 % Slices               =   36
 % Pulse                =   50 ms
 % 1º start laptop; 2º start session in syncbox; 3º start mri machine
@@ -192,10 +193,10 @@ textNeutralStimuli_en = {
 };
 
 responseOptions_pt = {
-    'Completamente Verdadeiro'
-    'Maioritariamente Verdadeiro'
-    'Parcialmente Verdadeiro'
-    'Falso'
+    '1) Completamente Verdadeiro'
+    '2) Maioritariamente Verdadeiro'
+    '3) Parcialmente Verdadeiro'
+    '4) Falso'
 };
 
 responseOptions_en = {

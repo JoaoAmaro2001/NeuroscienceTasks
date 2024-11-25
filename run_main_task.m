@@ -1,4 +1,16 @@
+% Participant ID: PID_<PATIENT/CONTROL><RIGHT/LEFT>_<XXX>
+% e.g. PID_CR_001 or PID_PL_011
+% Participants:
+% 1) sub-PID_PR_001
+% 2) sub-PID_PR_002
+% 3) sub-PID_CR_001
+% 4) sub-PID_PR_003
+% 5) sub-PID_PR_004
+% 6) sub-PID_PR_005
+% 7) sub-PID_CR_002
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 clear, clc, close all
+init_experiment;
 sub_id     = input("Write the participant's id code:\n", 's');
 task       = 'sentences';
 lang       = '_pt';  % _en for english and _pt for portuguese
@@ -13,9 +25,9 @@ settings_main;       % Load all the settings from the file
 % 3. Load neutral stimulus
 % -------------------------------------------------------------------------
 
-% Init
+% Init (only change the first parameter)
 tr_final    = (8*32 + 8*32)/2;      % Number of triggers == 256
-tr_trigger  = -1;                   % TR trigger counter (There are 256 -> ((8*32 + 8*32 + 10)/2) = 8.7 mins)
+tr_trigger  = -1;                   % TR trigger counter (There are 256 -> (8*32 + 8*32) = 8.7 mins)
 tr_N        = -1;                   % tr counter inside loop for each block
 tr_n        = -1;                   % tr counter inside loop for each stimulus22
 tr_cross    = 0;                    % tr counter for cross
@@ -30,6 +42,8 @@ flag_screen = 1;                    % Flag for updating screen
 flag_resp   = 1;                    % Flag for response -> can only respond while is 1
 flag_first  = 1;                    % Flag for first time reading the aux
 boldOption  = [];                   % Variable that carries response info
+true_tr_time= 0;                    % Init variable holding true time for the TR value
+beg_cross   = 0;                    % Variable telling if we have already reached a cross block
 % LOG INFO
 rt_num      = zeros(1,32);          % Reaction time for response
 res_num     = zeros(1,32);          % Response number
@@ -216,13 +230,19 @@ while 1
 
     % TR-DEPENDENT STIMULUS CONTROL 
     if ~isempty(aux) && (aux == 115)
+        
         if tr_trigger == -1
             state     = 2;
             start_exp = GetSecs;
             fprintf('First trigger received - beginning volumes\n')
         end
-        if tr_trigger == tr_final % end trigger
-            break
+
+        % TRUE TR TRIGGERS
+        flush(s)
+        true_tr = read(s,1,'uint8');
+        if ~isempty(true_tr) && (true_tr == 115)
+            true_tr_time = GetSecs();
+            fprintf('Fetching TRUE TR at %f seconds \n', true_tr_time - start_exp)
         end
 
         switch state
@@ -233,7 +253,7 @@ while 1
                 tr_cross = tr_cross + 1; fprintf('Cross TR nº%d\n', tr_cross);
                 % Create a new row for the event info table---------------------------------------------------------------------
                 currentTime = GetSecs();
-                newRow = table(tr_trigger, currentTime - start_exp, currentTime - toc, currentTime, "Cross",...
+                newRow = table(tr_trigger, currentTime - start_exp, currentTime - toc, true_tr_time - currentTime, "Cross",...
                 'VariableNames', {'TR', 'AbsoluteTime', 'RelativeTime', 'Difference', 'Description'});
                 T_events(tr_trigger,:) = newRow;
                 %---------------------------------------------------------------------------------------------------------------                
@@ -256,6 +276,18 @@ while 1
                 tr_trigger = tr_trigger + 1; fprintf('TR nº%d\n', tr_trigger);
                 tr_N = tr_N + 1; fprintf('Block-A TR nº%d\n', tr_N);
                 tr_n = tr_n + 1; fprintf('Stimulus TR nº%d\n', tr_n);
+                % End Task
+                if tr_trigger == tr_final % end trigger
+                    disp('snippet 1')
+                    % Create a new row for the event info table
+                    currentTime = GetSecs();
+                    loopTime    = toc;
+                    newRow = table(tr_trigger, currentTime - start_exp, loopTime - timetmp, currentTime, "Cross",...
+                    'VariableNames', {'TR', 'AbsoluteTime', 'RelativeTime', 'Difference', 'Description'});
+                    T_events(tr_trigger,:) = newRow;
+                    % Leave loop
+                    break
+                end
                 % Create a new row for the event info table---------------------------------------------------------------------
                 if tr_trigger ~= 0
                 currentTime = GetSecs();
@@ -264,6 +296,28 @@ while 1
                 T_events(tr_trigger,:) = newRow;
                 end
                 %---------------------------------------------------------------------------------------------------------------
+                if tr_n==0 & beg_cross
+                    % Create a new row for the event info table
+                    currentTime = GetSecs();
+                    loopTime    = toc;
+                    newRow = table(tr_trigger, currentTime - start_exp, loopTime - timetmp, currentTime, "Cross",...
+                    'VariableNames', {'TR', 'AbsoluteTime', 'RelativeTime', 'Difference', 'Description'});
+                    T_events(tr_trigger,:) = newRow;
+                end
+                %---------------------------------------------------------------------------------------------------------------
+                % End Task
+                if tr_trigger == tr_final % end trigger
+                    disp('snippet 2')
+                    % Create a new row for the event info table
+                    currentTime = GetSecs();
+                    loopTime    = toc;
+                    newRow = table(tr_trigger, currentTime - start_exp, loopTime - timetmp, currentTime, "Cross",...
+                    'VariableNames', {'TR', 'AbsoluteTime', 'RelativeTime', 'Difference', 'Description'});
+                    T_events(tr_trigger,:) = newRow;
+                    % Leave loop
+                    break
+                end
+                %---------------------------------------------------------------------------------------------------------------                
                 if tr_n == 4 % 4 because tr_n=1 signifies beginning of first TR
                     stim_input = eval(strcat('textActiveStimuli', lang));
                     % Fill variables for the log file
@@ -320,6 +374,15 @@ while 1
                 'VariableNames', {'TR', 'AbsoluteTime', 'RelativeTime', 'Difference', 'Description'});
                 T_events(tr_trigger,:) = newRow;
                 %---------------------------------------------------------------------------------------------------------------
+                if tr_n==0 & beg_cross
+                    % Create a new row for the event info table
+                    currentTime = GetSecs();
+                    loopTime    = toc;
+                    newRow = table(tr_trigger, currentTime - start_exp, loopTime - timetmp, currentTime, "Cross",...
+                    'VariableNames', {'TR', 'AbsoluteTime', 'RelativeTime', 'Difference', 'Description'});
+                    T_events(tr_trigger,:) = newRow;
+                end                
+                %---------------------------------------------------------------------------------------------------------------
                 if tr_n == 4
                     stim_input = eval(strcat('textNeutralStimuli', lang));
                     % Fill variables for the log file
@@ -330,7 +393,7 @@ while 1
                         btrial(trial_num)   = trial_neu;
                         stim_txt{trial_num} = stim_input{trial_neu};         
                         res_txt{trial_num}   = "";
-                        cond{trial_num}     = cond_text{1};
+                        cond{trial_num}     = cond_text{2};
                     else
                         rt_num(trial_num)   = rt_num(trial_num);
                         res_num(trial_num)  = res_num(trial_num);

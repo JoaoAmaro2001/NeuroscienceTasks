@@ -1,9 +1,10 @@
 clear, clc, close all
+init_experiment;
 sub_id     = input("Write the participant's id code:\n", 's');
 task       = 'sentences';
 lang       = '_pt';  % _en for english and _pt for portuguese
 handedness = 1;      % 1 for one handed or 2 for two handed joysticks
-settings_main;       % Load all the settings from the file
+settings_main_tr;    % Load all the settings from the file
 
 % -------------------------------------------------------------------------
 %                           State Information:
@@ -65,7 +66,9 @@ while 1
     % FMRI SERIAL PORT COMMUNICATION
     timetmp = toc;
     flush(s)
-    aux = read(s,1,'uint8');
+    % aux = read(s,1,'uint8');
+    aux = fread(s);
+    
 
     % MANUAL CONTROL 
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
@@ -197,6 +200,7 @@ while 1
 
     % TR-DEPENDENT STIMULUS CONTROL 
     if ~isempty(aux) && (aux == 115)
+        aux = [];
         if tr_trigger == -1
             state     = 2;
             start_exp = GetSecs;

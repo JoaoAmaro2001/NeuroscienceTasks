@@ -17,7 +17,7 @@ function addResponseOptions(windowPtr, responseOptions, boldOption)
     ];
    
     % Set the text parameters
-    Screen('TextSize', windowPtr, 40);
+    Screen('TextSize', windowPtr, 60); % 10 less than the question's text size
     Screen('TextStyle', windowPtr, 0); % normal
    
     % Add the text to the screen

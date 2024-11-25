@@ -1,9 +1,10 @@
 clear, clc, close all
+init_experiment;
 sub_id     = input("Write the participant's id code:\n", 's');
 task       = 'sentences';
 lang       = '_pt';  % _en for english and _pt for portuguese
 handedness = 1;      % 1 for one handed or 2 for two handed joysticks
-settings_training;       % Load all the settings from the file
+settings_training;   % Load all the settings from the file
 
 % -------------------------------------------------------------------------
 %                           State Information:
@@ -101,7 +102,7 @@ while 1
     if (state == 2 || state == 3) && flag_resp && handedness == 1 && tr_trigger ~= -1
         [keyIsDown, ~, keyCode] = KbCheck; 
         if state == 2
-            text_input = eval(strcat('textActiveStimuli', lang));
+            text_input = eval(strcat('textTraining', lang));
             trialnumi  = trial_act;
         elseif state == 3
             text_input = eval(strcat('textNeutralStimuli', lang));
@@ -163,7 +164,7 @@ while 1
 
     if (state == 2 || state == 3) && flag_resp && handedness == 2 && tr_trigger ~= -1
         if state == 2
-            text_input = eval(strcat('textActiveStimuli', lang));
+            text_input = eval(strcat('textTraining', lang));
         elseif state == 3
             text_input = eval(strcat('textNeutralStimuli', lang));
         end
@@ -265,7 +266,7 @@ while 1
                 end
                 %---------------------------------------------------------------------------------------------------------------
                 if tr_n == 4 % 4 because tr_n=1 signifies beginning of first TR
-                    stim_input = eval(strcat('textActiveStimuli', lang));
+                    stim_input = eval(strcat('textTraining', lang));
                     % Fill variables for the log file
                     if rt_num(trial_num) == 0
                         rt_num(trial_num)   = NaN;
@@ -292,7 +293,7 @@ while 1
                     flag_resp   = 1;
                 end
                 if flag_screen && tr_N ~= 16
-                    drawText(window1, eval(strcat('textActiveStimuli', lang)), trial_act, W, H, backgroundColor, textColor)
+                    drawText(window1, eval(strcat('textTraining', lang)), trial_act, W, H, backgroundColor, textColor)
                     addResponseOptions(window1, responseOptions, boldOption)
                     rt_beg = GetSecs;
                     flag_screen = 0;

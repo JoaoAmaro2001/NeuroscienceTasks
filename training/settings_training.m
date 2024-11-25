@@ -1,7 +1,7 @@
 % -------------------------------------------------------------------------
 %                         Directories
 % -------------------------------------------------------------------------
-log_path           = fullfile(orip,'results'); mkdir(log_path)
+log_path           = fullfile(orip,'log'); mkdir(log_path)
 event_path         = fullfile(orip,'events');  mkdir(event_path)
 
 % -------------------------------------------------------------------------
@@ -116,7 +116,7 @@ end
 
 cond_text = {'active','neutral'};
 
-textTraining = {
+textTraining_pt = {
     'Os pássaros cantam melodias ao pôr do sol.'
     'O queijo azul tem um sabor intenso e peculiar.'
     'As folhas dançam com o vento de outono.'
@@ -135,10 +135,10 @@ textTraining = {
     'O perfume das flores de jasmim enche o ar noturno.'
 };
 
-responseOptions = {
-    'Completamente Verdadeiro'
-    'Maioritariamente Verdadeiro'
-    'Parcialmente Verdadeiro'
-    'Falso'
+responseOptions_pt = {
+    '1) Completamente Verdadeiro'
+    '2) Maioritariamente Verdadeiro'
+    '3) Parcialmente Verdadeiro'
+    '4) Falso'
 };
 

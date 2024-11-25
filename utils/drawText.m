@@ -1,5 +1,5 @@
 function drawText(windowToAdd, textToAdd, trial_num, W, H, backgroundColor, textColor)
-    Screen('TextSize', windowToAdd, 70);
+    Screen('TextSize', windowToAdd, 70); % trial and error for fmri screen
     text = textToAdd{trial_num};
     [textWidth, textHeight] = RectSize(Screen('TextBounds', windowToAdd, text));
     xPos = (W - textWidth) / 2;

@@ -17,7 +17,7 @@ Screen('Preference','VisualDebugLevel', 0); % Minimum amount of diagnostic outpu
 % % ------------------------------------------------------------------------- 
 whichScreenMin = min(Screen('Screens')); % Get the screen numbers
 [screenWidth, screenHeight] = Screen('WindowSize', whichScreenMin); % Get the screen size
-[window1, rect] = Screen('OpenWindow', whichScreenMin, backgroundColor, [0 0 screenWidth, screenHeight]);
+[window1, rect] = Screen('OpenWindow', whichScreenMin, backgroundColor, [0 0 screenWidth, screenHeight/2]);
 % -------------------------------------------------------------------------
 %                             2 SCREENS
 % ------------------------------------------------------------------------- 
@@ -122,10 +122,10 @@ textNeutralStimuli = {
 };
 
 responseOptions = {
-    'Completamente Verdadeiro'
-    'Maioritariamente Verdadeiro'
-    'Parcialmente Verdadeiro'
-    'Falso'
+    '1) Completamente Verdadeiro'
+    '2) Maioritariamente Verdadeiro'
+    '3) Parcialmente Verdadeiro'
+    '4) Falso'
 };
 
 % -------------------------------------------------------------------------
