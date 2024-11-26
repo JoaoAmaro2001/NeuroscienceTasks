@@ -19,7 +19,7 @@ settings_main_sim;       % Load all the settings from the file
 % 3. Image
 % -------------------------------------------------------------------------
 
-% Init (only change the first parameter)
+% Init
 state       = 1;                    % Gets the state information
 been_here   = 0;                    % Whether while loop has been in that state
 tr_final    = stimuli_number*TR*4;  % Number of triggers == 640 (8 seconds/trial)
@@ -42,7 +42,7 @@ T_events = table('Size', [10000, 7], 'VariableTypes', {'double', 'double', 'date
 % Pyschtoolblox prelim
 Priority(MaxPriority(window1)); % Give priority of resources to experiment
 Screen('TextSize', window1, 50);
-Screen('DrawText',window1,'A experiência começará em breve', (W/2), (H/2), textColor);
+Screen('DrawText',window1,'A experiência começará em breve', (W/2.9), (H/2), textColor);
 Screen('Flip',window1);
 WaitSecs(5)
 
@@ -53,11 +53,6 @@ disp('Estado: Ecrã em branco')
 
 % Start the experiment
 while 1
-    
-    % END OF EXPERIMENT 
-    if tr_trigger == tr_final && trial_number == stimuli_number 
-        break
-    end
 
     if tr_trigger == -1
         tstart_sim = tic; % Tic for simulation
@@ -106,7 +101,7 @@ while 1
             disp('button1-------------------------------------------')
             flag_answer = 1;
             % Update screen
-            imgScore = imread(fullfile(orip,'img', 'score', 'Score_1.JPG'));
+            imgScore = imread(fullfile(orip,'img', 'score', 'Score_1.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
             imgScoreResized = imresize(imgScore, 0.7);
             imageSize = size(imgScoreResized);
@@ -127,7 +122,7 @@ while 1
             disp('button2-------------------------------------------')
             flag_answer = 1;            
             % Update screen
-            imgScore = imread(fullfile(orip,'img', 'score', 'Score_2.JPG'));
+            imgScore = imread(fullfile(orip,'img', 'score', 'Score_2.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
             imgScoreResized = imresize(imgScore, 0.7);
             imageSize = size(imgScoreResized);
@@ -148,7 +143,7 @@ while 1
             disp('button3-------------------------------------------')
             flag_answer = 1;            
             % Update screen
-            imgScore = imread(fullfile(orip,'img', 'score', 'Score_3.JPG'));
+            imgScore = imread(fullfile(orip,'img', 'score', 'Score_3.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
             imgScoreResized = imresize(imgScore, 0.7);
             imageSize = size(imgScoreResized);
@@ -169,7 +164,7 @@ while 1
             disp('button4-------------------------------------------')
             flag_answer = 1;            
             % Update screen
-            imgScore = imread(fullfile(orip,'img', 'score', 'Score_4.JPG'));
+            imgScore = imread(fullfile(orip,'img', 'score', 'Score_4.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
             imgScoreResized = imresize(imgScore, 0.7);
             imageSize = size(imgScoreResized);
@@ -195,7 +190,7 @@ while 1
             disp('button1-------------------------------------------')
             flag_answer = 1;
             % Update screen
-            imgScore = imread(fullfile(orip,'img', 'score', 'Score_1.JPG'));
+            imgScore = imread(fullfile(orip,'img', 'score', 'Score_1.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
             imgScoreResized = imresize(imgScore, 0.7);
             imageSize = size(imgScoreResized);
@@ -216,7 +211,7 @@ while 1
             disp('button2-------------------------------------------')
             flag_answer = 1;            
             % Update screen
-            imgScore = imread(fullfile(orip,'img', 'score', 'Score_2.JPG'));
+            imgScore = imread(fullfile(orip,'img', 'score', 'Score_2.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
             imgScoreResized = imresize(imgScore, 0.7);
             imageSize = size(imgScoreResized);
@@ -237,7 +232,7 @@ while 1
             disp('button3-------------------------------------------')
             flag_answer = 1;            
             % Update screen
-            imgScore = imread(fullfile(orip,'img', 'score', 'Score_3.JPG'));
+            imgScore = imread(fullfile(orip,'img', 'score', 'Score_3.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
             imgScoreResized = imresize(imgScore, 0.7);
             imageSize = size(imgScoreResized);
@@ -258,7 +253,7 @@ while 1
             disp('button4-------------------------------------------')
             flag_answer = 1;            
             % Update screen
-            imgScore = imread(fullfile(orip,'img', 'score', 'Score_4.JPG'));
+            imgScore = imread(fullfile(orip,'img', 'score', 'Score_4.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
             imgScoreResized = imresize(imgScore, 0.7);
             imageSize = size(imgScoreResized);
@@ -282,7 +277,7 @@ while 1
 
         switch state
 
-            case 1
+            case 1               
                 % 1. Blank screen
                 if ~been_here
                 been_here = 1;
@@ -345,12 +340,13 @@ while 1
                 img = imresize(img, 2);
                 
                 % Calculate image position (centered)
+                shift = 0.1 * H;
                 imageSize = size(img);
-                pos1 = [(W - imageSize(2)) / 2, (H - imageSize(1)) / 2, (W + imageSize(2)) / 2, (H + imageSize(1)) / 2];
+                pos1 = [(W - imageSize(2)) / 2, (H - imageSize(1)) / 2 - shift, (W + imageSize(2)) / 2, (H + imageSize(1)) / 2 - shift];
                 imageDisplay1 = Screen('MakeTexture', window1, img);
                 
                 % Load initial score image
-                imgScoreInitial = imread(fullfile(orip,'img', 'score', 'Start_scoring.JPG'));   
+                imgScoreInitial = imread(fullfile(orip,'img', 'score', 'Start_scoring.PNG'));   
                 imageDisplay2 = Screen('MakeTexture', window1, imgScoreInitial);
                 imgScoreResized = imresize(imgScoreInitial, 0.7);
                 imageSize = size(imgScoreResized);
@@ -380,10 +376,9 @@ while 1
                 if toc(image_start)>=this_image_time
                     state = 1;
                     been_here = 0;
-                    disp('hey')
                     if ~flag_answer
                         % Update screen
-                        imgScore = imread(fullfile(orip,'img', 'score', 'Score_0.JPG'));
+                        imgScore = imread(fullfile(orip,'img', 'score', 'Score_0.PNG'));
                         imageDisplay2 = Screen('MakeTexture', window1, imgScore);
                         imgScoreResized = imresize(imgScore, 0.7);
                         imageSize = size(imgScoreResized);
@@ -399,10 +394,12 @@ while 1
                         res_num(trial_num)      = NaN;  
                         flag_resp               = 0;
                     end
-                    disp('bye')
                     flag_answer = 0;
+                    % CHECK FOR END OF EXPERIMENT 
+                    if trial_num == stimuli_number 
+                        break
+                    end                     
                 end                   
-
         end
     end
 end

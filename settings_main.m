@@ -67,7 +67,7 @@ end
 % Trigger on volume    =   1
 % TR                   =   2000 ms
 % Volumes              =   256 -> dummies do not send (1st tr trigger is tr nº0)
-% Slices               =   36
+% Slices               =   35
 % Pulse                =   50 ms
 % 1º start laptop; 2º start session in syncbox; 3º start mri machine
 
