@@ -10,6 +10,8 @@ switch computerName
         lenovo_pc_setup;
     case 'DESKTOP-UJUVJ70'
         tower_computer_setup;
+    case 'JOAO-AMARO'
+        joao_personal_pc_setup;
 end
 
 % -------------------------------------------------------------------------
