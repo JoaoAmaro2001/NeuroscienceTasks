@@ -1,7 +1,8 @@
 % Participant ID: PID_<PATIENT/CONTROL><RIGHT/LEFT>_<XXX>
 % e.g. PID_CR_001 or PID_PL_011
 % Participants:
-% 1) sub-
+% 1) sub-PID_PR_008
+% 2) sub-PID_PR_009
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 clear, clc, close all
 init_experiment;
@@ -22,13 +23,14 @@ settings_main;       % Load all the settings from the file
 % Init
 state       = 1;                    % Gets the state information
 been_here   = 0;                    % Whether while loop has been in that state
-tr_final    = stimuli_number*TR*4;  % Number of triggers == 640 (8 seconds/trial)
+tr_final    = stimuli_number*TR*4/2;% Number of triggers == 640 (8 seconds/trial)
 tr_trigger  = -1;                   % TR trigger counter (There are 640 -> 10.6 mins)
 trial_num   = 0;                    % Trial counter
 evt_counter = 0;                    % Counter for new stored events
 flag_resp   = 0;                    % Flag for response -> can only respond while is 1
 flag_answer = 0;                    % FLag to know if subject answered
 true_tr_time= 0;                    % Init variable holding true time for the TR value
+first_trigger=0;
 % LOG INFO
 rt_num      = zeros(1,stimuli_number);          % Reaction time for response
 res_num     = zeros(1,stimuli_number);          % Response number
@@ -71,13 +73,17 @@ while 1
             end    
         end        
     else
+
         % LISTENING TO TRUE FMRI TR TRIGGERS
-        flush(s)
-        true_tr = read(s,1,'uint8');
-        if ~isempty(true_tr) && (true_tr == 115)
-            true_tr_time = GetSecs();
-            fprintf('Fetching TRUE TR at %f seconds \n', true_tr_time - start_exp)
-        end        
+        if s.NumBytesAvailable > 0 
+            true_tr = read(s,1,'uint8');
+            if ~isempty(true_tr) && (true_tr == 115)
+                true_tr_time = GetSecs();
+                fprintf('Fetching TRUE TR at %f seconds \n', true_tr_time - start_exp)
+            end   
+            flush(s)
+        end
+
         % SIMULATING SERIAL PORT COMMUNICATION
         timetmp = toc(tstart_sim);
         firstDigit = str2double(num2str(floor(timetmp)));
@@ -206,7 +212,7 @@ while 1
             % Update screen
             imgScore = imread(fullfile(orip,'img', 'score', 'Score_1.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
-            imgScoreResized = imresize(imgScore, 0.7);
+            imgScoreResized = imresize(imgScore, 0.7); % resize
             imageSize = size(imgScoreResized);
             pos2 = [(W - imageSize(2)) / 2, H * 0.75, (W + imageSize(2)) / 2, H * 0.75 + imageSize(1)];
             imageDisplays = [imageDisplay1, imageDisplay2];
@@ -227,7 +233,7 @@ while 1
             % Update screen
             imgScore = imread(fullfile(orip,'img', 'score', 'Score_2.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
-            imgScoreResized = imresize(imgScore, 0.7);
+            imgScoreResized = imresize(imgScore, 0.7); % resize
             imageSize = size(imgScoreResized);
             pos2 = [(W - imageSize(2)) / 2, H * 0.75, (W + imageSize(2)) / 2, H * 0.75 + imageSize(1)];
             imageDisplays = [imageDisplay1, imageDisplay2];
@@ -248,7 +254,7 @@ while 1
             % Update screen
             imgScore = imread(fullfile(orip,'img', 'score', 'Score_3.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
-            imgScoreResized = imresize(imgScore, 0.7);
+            imgScoreResized = imresize(imgScore, 0.7); % resize
             imageSize = size(imgScoreResized);
             pos2 = [(W - imageSize(2)) / 2, H * 0.75, (W + imageSize(2)) / 2, H * 0.75 + imageSize(1)];
             imageDisplays = [imageDisplay1, imageDisplay2];
@@ -269,7 +275,7 @@ while 1
             % Update screen
             imgScore = imread(fullfile(orip,'img', 'score', 'Score_4.PNG'));
             imageDisplay2 = Screen('MakeTexture', window1, imgScore);
-            imgScoreResized = imresize(imgScore, 0.7);
+            imgScoreResized = imresize(imgScore, 0.7); % resize
             imageSize = size(imgScoreResized);
             pos2 = [(W - imageSize(2)) / 2, H * 0.75, (W + imageSize(2)) / 2, H * 0.75 + imageSize(1)];
             imageDisplays = [imageDisplay1, imageDisplay2];
@@ -352,7 +358,7 @@ while 1
 
                 % Draw screen
                 img = imread(fullfile(orip,'img', 'stim', sequence{trial_num}));
-                img = imresize(img, 2);
+                img = imresize(img, 1.5); % adjust for screen
                 
                 % Calculate image position (centered)
                 shift = 0.1 * H;
@@ -430,6 +436,6 @@ writetable(T_events,eventname_file)
 
 % Save log information in excel file
 logname_file = [log_path strcat('\sub-',sub_id,'_task-',task,'_log.xlsx')];
-T_log = table(trial', stim_cell', res_num',rt_num','VariableNames',{'Trial','Type','Response','ReactionTime'});
+T_log = table(trial', stim_cell', res_num',rt_num',blank_times, cross_times,'VariableNames',{'Trial','Type','Response','ReactionTime','BlankTime','CrossTime'});
 writetable(T_log,logname_file)
 

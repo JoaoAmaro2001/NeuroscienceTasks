@@ -51,9 +51,8 @@ lambda         = 1;  % Poisson parameter
 % -------------------------------------------------------------------------
 
 try
-    % s = serialport('COM3', 57600); % The stimbox works at 57600 s/s
     s = serialport('COM6', 57600);   % The stimbox works at 57600 s/s
-    s.Timeout = TR;                  % Timeout to fetch real TR signal
+    s.Timeout = 0.01;                  % Timeout to fetch real TR signal
     disp('Serial port communication is set.')
 catch
     s = [];

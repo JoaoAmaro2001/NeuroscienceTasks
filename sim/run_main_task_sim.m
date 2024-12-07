@@ -337,7 +337,7 @@ while 1
 
                 % Draw screen
                 img = imread(fullfile(orip,'img', 'stim', sequence{trial_num}));
-                img = imresize(img, 2);
+                img = imresize(img, 1.5); % adjust for screen
                 
                 % Calculate image position (centered)
                 shift = 0.1 * H;

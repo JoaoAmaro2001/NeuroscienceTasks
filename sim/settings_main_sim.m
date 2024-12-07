@@ -37,7 +37,7 @@ Screen('Flip', window1); % Updates the screen (flip the offscreen buffer to the 
 % -------------------------------------------------------------------------
 TR             = 2;  % Repetition time
 stimuli_number = 80; % Number of stimuli 
-lambda         = 1;  % Poisson parameter
+lambda         = 1;  % Poisson parameter 
 
 % -------------------------------------------------------------------------
 %                         Setup MRI joysticks (two handed)
