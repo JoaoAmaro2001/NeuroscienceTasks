@@ -1,8 +1,15 @@
-2% -------------------------------------------------------------------------
+% -------------------------------------------------------------------------
 %                         Directories
 % -------------------------------------------------------------------------
 log_path           = fullfile(orip,'log'); mkdir(log_path)
 event_path         = fullfile(orip,'events');  mkdir(event_path)
+
+
+% -------------------------------------------------------------------------
+%                       Study Parameters 
+% -------------------------------------------------------------------------
+TR             = 2;  % Repetition time
+stimuli_number = 80; % Number of stimuli 
 
 % -------------------------------------------------------------------------
 %                         Screen Setup
@@ -21,8 +28,14 @@ Screen('FillRect',window1, backgroundColor);    % Fills the screen with the back
 Screen('Flip', window1);                        % Updates the screen (flip the offscreen buffer to the screen)
 
 % -------------------------------------------------------------------------
-%                       Setting the serial communication  
+%                       Setting the serial port communication  
 % -------------------------------------------------------------------------
+% For reading triggers sent by the MRI machine via the stimbox
+% Connect to the port via the seriaport function
+% Continously check if it has something via s.NumBytesAvailable
+% If it does read the port, else ignore
+% Flush at the via flush(s) to ensure you got the latest trigger
+%
 % Parameters
 % -------
 % num_volumes
@@ -45,9 +58,8 @@ Screen('Flip', window1);                        % Updates the screen (flip the o
 %     False for synchronization mode. True for simulation mode.
 
 try
-    % s = serialport('COM3', 57600); % The stimbox works at 57600 s/s
     s = serialport('COM6', 57600);   % The stimbox works at 57600 s/s
-    s.Timeout = 0.05;                % Timeout to fetch real TR signal
+    s.Timeout = 0.01;                % Timeout to fetch real TR signal
     disp('Serial port communication is set.')
 catch
     s = [];

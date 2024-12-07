@@ -118,12 +118,13 @@ cond_text = {'active','neutral'};
 
 textTraining_pt = {
     'Os pássaros cantam melodias ao pôr do sol.'
-    'O queijo azul tem um sabor intenso e peculiar.'
+    'O queijo azul tem um sabor intenso e peculiar, ao contrário do queijo verde.'
     'As folhas dançam com o vento de outono.'
     'O mar sussurra segredos antigos às rochas.'
     'A lua cheia ilumina o caminho na floresta escura.'
     'As estrelas piscam como diamantes no céu noturno.'
     'O aroma do café recém-moído preenche a cozinha.'
+    'Gosto de desenvolver uma folha de cálculo usando software de computador.'    
     'As abelhas trabalham diligentemente no jardim colorido.'
     'O relógio antigo marca o tempo com precisão.'
     'As nuvens formam padrões fascinantes no horizonte.'

@@ -8,6 +8,11 @@
 % 5) sub-PID_PR_004
 % 6) sub-PID_PR_005
 % 7) sub-PID_CR_002
+% 8) sub-PID_CR_003
+% 9) sub-PID_PR_006
+% 10)sub-PID_PR_007
+% 11)sub-PID_PR_008
+% 12)sub-PID_PR_009
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 clear, clc, close all
 init_experiment;
@@ -42,7 +47,7 @@ flag_screen = 1;                    % Flag for updating screen
 flag_resp   = 1;                    % Flag for response -> can only respond while is 1
 flag_first  = 1;                    % Flag for first time reading the aux
 boldOption  = [];                   % Variable that carries response info
-true_tr_time= 0;                    % Init variable holding true time for the TR value
+true_tr_time= NaN;                  % Init variable holding true time for the TR value
 beg_cross   = 0;                    % Variable telling if we have already reached a cross block
 % LOG INFO
 rt_num      = zeros(1,32);          % Reaction time for response
@@ -81,18 +86,13 @@ while 1
         flush(s)
         aux = read(s,1,'uint8'); disp(aux);
         prevDigit = -1;  % Initialize prevDigit to a value that firstDigit will never be
-        tic;
+        init_time = tic;
     else
         % SIMULATING SERIAL PORT COMMUNICATION
-        timetmp = toc;
+        timetmp = toc(init_time);
         firstDigit = str2double(num2str(floor(timetmp)));
         if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit && firstDigit ~= 0
             aux = 115;
-            % beep
-            % S(1) = load('gong');
-            % S(2) = load('handel');
-            % sound(S(1).y,S(1).Fs)
-            % sound(S(2).y,S(2).Fs)
             toc
         else
             aux = [];
@@ -238,13 +238,15 @@ while 1
         end
 
         % TRUE TR TRIGGERS
-        flush(s)
-        true_tr = read(s,1,'uint8');
-        if ~isempty(true_tr) && (true_tr == 115)
-            true_tr_time = GetSecs();
-            fprintf('Fetching TRUE TR at %f seconds \n', true_tr_time - start_exp)
+        if s.NumBytesAvailable > 0
+            true_tr = read(s,1,'uint8');
+            if ~isempty(true_tr) && (true_tr == 115)
+                true_tr_time = GetSecs();
+                fprintf('Fetching TRUE TR at %f seconds \n', true_tr_time - start_exp)
+            end
+            flush(s)
         end
-
+        
         switch state
 
             case 1
