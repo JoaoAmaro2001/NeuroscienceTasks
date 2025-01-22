@@ -10,8 +10,8 @@ root_dir    = fullfile(git_dir,username, projectname);
 toolbox_dir = 'C:\Packages';
 
 % Add to path
-cd(task_dir);
-addpath(genpath(task_dir));
+cd(root_dir);
+addpath(genpath(root_dir));
 
 % Toolboxes
 items = dir(toolbox_dir);

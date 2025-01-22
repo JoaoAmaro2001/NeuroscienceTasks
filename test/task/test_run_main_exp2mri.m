@@ -1,39 +1,19 @@
-% Main script for running Emotional Cities' experiment 2 in MRI
-% Hit 'esc' to terminate the task
-% -------------------------------------------------------------------------
+% Main script for running Emotional Cities' experiment 2
+% Hit 'o' after doing the eyetracker calibration
+% Hit 'esc' on the training script to start the task
 
+% -------------------------------------------------------------------------
 clear; close all; clc; % Clean workspace
 settings_main_exp2mri; % Load all the settings from the file
-HideCursor;            % Hide cursor
+HideCursor;
 
 % -------------------------------------------------------------------------
-%                           State Information:
-%                               
-% 1. Blank screen & Cross
-% 2. Load active stimulus
-% 3. Load neutral stimulus
+%                       Set variables fot While Loop
 % -------------------------------------------------------------------------
-
-% Init (only change the first parameter)
-begin_task  = false;                % Flag to begin task
-tr_final    = (8*32 + 8*32)/2;      % Number of triggers == 256
-tr_trigger  = -1;                   % TR trigger counter (There are 256 -> (8*32 + 8*32) = 8.7 mins)
-tr_N        = -1;                   % tr counter inside loop for each block
-tr_n        = -1;                   % tr counter inside loop for each stimulus22
-tr_cross    = 0;                    % tr counter for cross
-num_cross   = 0;                    % Counter for the cross state
-state       = 2;                    % Gets the state information
-ds_block    = 0;                    % Set the ds block counter -> active stimulus
-dn_block    = 0;                    % Set the dn block counter -> neutral stimulus
-trial_num   = 1;                    % Trial counter
-trial_act   = 1;                    % Trial counter for active block
-trial_neu   = 1;                    % Trial counter for neutral block
-flag_screen = 1;                    % Flag for updating screen
-flag_resp   = 1;                    % Flag for response -> can only respond while is 1
-flag_first  = 1;                    % Flag for first time reading the aux
-boldOption  = [];                   % Variable that carries response info
-true_tr_time= NaN;                  % Init variable holding true time for the TR value
-beg_cross   = 0;                    % Variable telling if we have already reached a cross block
+% Number of trials/videos based on available videos
+n                 = filesForEachSession; 
+trial_            = 1;
+event_            = 1;
 
 % -------------------------------------------------------------------------
 %                       Set variables for Log File
@@ -51,11 +31,18 @@ stim              = cell(1,n);
 % -------------------------------------------------------------------------
 
 % Description:
-% - capture simulated TR trigger
-% - capture MRI TR triggers
-% - capture time information
+% DIN99 - parallel_port(99) -> Empathic sync
+% DIN98 - parallel_port(98) -> Eyes closed baseline
+% DIN97 - parallel_port(97) -> Eyes open baseline
+% DIN1  - parallel_port(1)  -> Beginning of Task Message
+% DIN2  - parallel_port(2)  -> Fixation Cross
+% DIN3  - parallel_port(3)  -> Image
+% DIN4  - parallel_port(4)  -> Video
+% DIN5  - parallel_port(5)  -> Valence
+% DIN6  - parallel_port(6)  -> Arousal
+% DIN7  - parallel_port(7)  -> Blank Screen
 
-numEvents       = data.task.number_states*n; % Equal to number of sent DINs
+numEvents       = 3 + 7*n; % Equal to number of sent DINs
 eventOnsets     = zeros(1, numEvents); % Time of event onset in seconds
 eventDurations  = zeros(1, numEvents); % Duration of event in seconds
 eventTypes      = cell(1, numEvents);  % Type of event, e.g., 'DI99', 'DI98'
@@ -67,38 +54,19 @@ eventTime       = cell(1, numEvents);  % Universal time given by datetime('now')
 %                       Start experiment
 % -------------------------------------------------------------------------
 
-% Initial state
-state = 1;
+% Wait fot user input to start the experiment
+% input('Press Enter to start the task.');
+
+if run==1
+    % Start with state 99
+    state     = 99;
+elseif run==2
+    % Start with state 1 and skip baseline
+    state     = 1;
+end
+
 
 while trial_ <= n
-
-% ------------------------------------------------------------------------%
-%                               AUXILLIARY                                %
-% ------------------------------------------------------------------------%    
-
-    % WAIT FOR FMRI FIRST TRIGGER!
-    if tr_trigger == -1 && ~data.debug
-        flush(s)
-        aux        = read(s,1,'uint8'); disp(aux);
-        prevDigit  = -1;  % Initialize prevDigit to a value that firstDigit will never be
-        begin_task = true;
-        init_time  = tic;
-    % SIMULATE FIRST TRIGGER (DEBUG MODE)!
-    elseif tr_trigger == -1 && data.debug
-        begin_task = true;
-        init_time  = tic;
-    else
-        % SIMULATING SERIAL PORT COMMUNICATION
-        timetmp = toc(init_time);
-        firstDigit = str2double(num2str(floor(timetmp)));
-        if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit && firstDigit ~= 0
-            aux = 115;
-            toc
-        else
-            aux = [];
-        end
-        prevDigit = firstDigit; % Update prevDigit
-    end
 
     % MANUAL CONTROL 
     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
@@ -108,18 +76,127 @@ while trial_ <= n
         end
     end
 
-% ------------------------------------------------------------------------%
-%                                TASK                                     %
-% ------------------------------------------------------------------------%
-    if begin_task
-
     switch state
 
-        % ----------------------------------------------------------------%
-        %                             Prelim                              %
-        % ----------------------------------------------------------------%
+% -------------------------------------------------------------------------
+%                  Countdown for empatica sync
+% -------------------------------------------------------------------------
+        case 99
+            if run==1
+            start_exp = GetSecs;
+            end
+            % -------------------------------------------
+            parallel_port(99);   % Send to NetStation
+            eventOnsets(event_) = GetSecs - start_exp;
+            eventTime{event_}   = datetime('now');
+            eventTypes{event_}  = 'DI99';  % Store the event type
+            eventValues(event_) = 99;  % Store the event value
+            eventSamples(event_)= round(eventOnsets(event_) * 500);  % Given 500 Hz sampling rate
+            % -------------------------------------------
+            countdown_from = 10; % Start countdown from 10
+            for i = countdown_from:-1:1
+                Screen('TextSize', window1, 60);
+                Screen('TextFont', window1, 'Arial');
+                message = sprintf(strcat(eval(strcat('data.text.starting', lanSuf)),' %d'), i);
+                DrawFormattedText(window1, message, 'center', 'center', textColor);
+                Screen('Flip', window1);
+                WaitSecs(1);
+            end
+            % -------------------------------------------
+            Eyelink('Message','Empatica Synch');
+            Eyelink('command','record_status_message "Instructions Screen"');
+            % -------------------------------------------
+            eventDurations(event_) = GetSecs - eventOnsets(event_);
+            event_ = event_ + 1;
+            if str2double(data.input{3}) == 1
+            state  = 98;
+            elseif str2double(data.input{3}) == 2 % set to 1 to ignore baseline
+            state  = 98;
+            end
+
+% -------------------------------------------------------------------------
+%                            Eyes closed Baseline
+% -------------------------------------------------------------------------
+        case 98
+            % You need to give clear instructions for when the subject
+            % needs to open their eyes again
+            Screen('TextSize', window1, 50);
+            DrawFormattedText(window1, eval(strcat('data.text.baselineClosed', lanSuf)), 'center', 'center', textColor);
+            InitialDisplayTime = Screen('Flip', window1);
+            WaitSecs(5);
+            countdown_from = 5; % Start countdown from 10
+            for i = countdown_from:-1:1
+                Screen('TextSize', window1, 60);
+                Screen('TextFont', window1, 'Arial');
+                message = sprintf(strcat( eval(strcat('data.text.starting', lanSuf)),' %d'), i);
+                DrawFormattedText(window1, message, 'center', 'center', textColor);
+                Screen('Flip', window1);
+                WaitSecs(1);
+            end
+            % -------------------------------------------
+            % Draw Cross
+            drawCross(window1, W, H);
+            tFixation = Screen('Flip', window1);
+            % -------------------------------------------
+            parallel_port(98);   % Send to NetStation
+            eventOnsets(event_) = GetSecs - start_exp;
+            eventTime{event_}   = datetime('now');
+            eventTypes{event_}  = 'DI98';  % Store the event type
+            eventValues(event_) = 98;  % Store the event value
+            eventSamples(event_)= round(eventOnsets(event_) * 500);  % Given 500 Hz sampling rate
+            % -------------------------------------------
+            Eyelink('Message','Eyes Closed');
+            Eyelink('command','record_status_message "Eyes Closed"')
+            % -------------------------------------------
+            WaitSecs(30);
+            eventDurations(event_) = GetSecs - eventOnsets(event_);
+            event_ = event_ + 1;
+            state  = 97;
+           
+% -------------------------------------------------------------------------
+%                            Eyes open Baseline
+% -------------------------------------------------------------------------
+        case 97
+            Screen('TextSize', window1, 50);
+            DrawFormattedText(window1, eval(strcat('data.text.baselineOpen', lanSuf)), 'center', 'center', textColor);
+            InitialDisplayTime = Screen('Flip', window1);
+            WaitSecs(5);
+            countdown_from = 5; % Start countdown
+            for i = countdown_from:-1:1
+                Screen('TextSize', window1, 60);
+                Screen('TextFont', window1, 'Arial');
+                message = sprintf(strcat( eval(strcat('data.text.starting', lanSuf)),' %d'), i);
+                DrawFormattedText(window1, message, 'center', 'center', textColor);
+                Screen('Flip', window1);
+                WaitSecs(1);
+            end
+            % -------------------------------------------
+            % Draw Cross
+            drawCross(window1, W, H);
+            tFixation = Screen('Flip', window1);
+            parallel_port(97);   % Send to NetStation
+            eventOnsets(event_) = GetSecs - start_exp;
+            eventTime{event_}   = datetime('now');
+            eventTypes{event_}  = 'DI97';  % Store the event type
+            eventValues(event_) = 97;  % Store the event value
+            eventSamples(event_)= round(eventOnsets(event_) * 500);  % Given 500 Hz sampling rate
+            % -------------------------------------------
+            Eyelink('Message','Eyes Open');
+            Eyelink('command','record_status_message "Eyes Open"')
+            % -------------------------------------------
+            WaitSecs(5);
+            eventDurations(event_) = GetSecs - eventOnsets(event_);
+            event_ = event_ + 1;
+            state  = 1;
+
+% -------------------------------------------------------------------------
+%                             Message
+% -------------------------------------------------------------------------
         case 1
-            Screen('TextSize', window1, data.formar.font_size);
+            if run==2
+            start_exp = GetSecs;
+            end
+            Screen('TextSize', window1, 50);
             DrawFormattedText(window1, eval(strcat('data.text.getready', lanSuf)), 'center', 'center', textColor);
             InitialDisplayTime = Screen('Flip', window1);
             % ------------------------------------------- EEG
@@ -128,15 +205,20 @@ while trial_ <= n
             eventTime{event_}   = datetime('now');
             eventTypes{event_}  = 'DI1';  % Store the event type
             eventValues(event_) = 1;  % Store the event value
+            eventSamples(event_)= round(eventOnsets(event_) * 500);  % Given 500 Hz sampling rate
+            % ------------------------------------------- EL
+            Eyelink('Message', 'TRIALID %d', trial_);
+            Eyelink('Message', '!V CLEAR %d %d %d', el.backgroundcolour(1), el.backgroundcolour(2), el.backgroundcolour(3));
+            Eyelink('Command', 'record_status_message "TRIAL %d/%d"', trial_, n);
             % -------------------------------------------
-            WaitSecs(data.task.preparation_duration);
+            WaitSecs(30);
             eventDurations(event_) = GetSecs - eventOnsets(event_);
             event_ = event_ + 1;
             state = 2;
 
-        % ----------------------------------------------------------------%
-        %                             Cross                               %
-        % ----------------------------------------------------------------%
+% -------------------------------------------------------------------------
+%                             Cross
+% -------------------------------------------------------------------------
         case 2
             Eyelink('Message','Fixation Cross');
             Eyelink('command','draw_cross %d %d',...
@@ -175,7 +257,6 @@ while trial_ <= n
             % important to select the correct sequence of videos
             videoFile    = data.sequences.files{trial_}; 
             fprintf('Stimulus - %s; Trial nº %d\n',videoFile, trial_);
-            fprintf('Time elapsed since beginning: %f minutes\n', (GetSecs-start_exp)/60);
             file         = fullfile(stim_path, videoFile);
             stim{trial_} = videoFile;
 
@@ -268,7 +349,7 @@ while trial_ <= n
             dst_rect_valence = CenterRectOnPointd([0 0 size(imageArray_valence, 2) size(imageArray_valence, 1)], centerX, centerY);
             % Set text size and font
             Screen('TextSize', window1, 40);
-            Screen('TextFont', window1, data.format.font);
+            Screen('TextFont', window1, 'Arial');
             % Initialize variables for circle clicks
             clicked_in_circle = false;
             clicked_circle_index = 0;
@@ -330,7 +411,7 @@ while trial_ <= n
             dst_rect_arousal = CenterRectOnPointd([0 0 size(imageArray_arousal, 2) size(imageArray_arousal, 1)], centerX, centerY);
             % Set text size and font
             Screen('TextSize', window1, 40);
-            Screen('TextFont', window1, data.format.font);
+            Screen('TextFont', window1, 'Arial');
             % Initialize variables for circle clicks
             clicked_in_circle = false;
             clicked_circle_index = 0;
@@ -400,16 +481,32 @@ while trial_ <= n
             % -------------------------------------------
             eventDurations(event_) = GetSecs - eventOnsets(event_);
             event_ = event_ + 1;
-            % ----
+            % ------------------------------------------- End trial EL
+            Eyelink('Message','End of trial %d', trial_);
+            Eyelink('Message','TRIAL_RESULT 0');
+            % -------------------------------------------
             trial_ = trial_ + 1;  
             state  = 2;
+            % ------------------------------------------- New trial EL
+            Eyelink('Message', 'TRIALID %d', trial_);
+            Eyelink('Message', '!V CLEAR %d %d %d', el.backgroundcolour(1), el.backgroundcolour(2), el.backgroundcolour(3));
+            Eyelink('Command', 'record_status_message "TRIAL %d/%d"', trial_, n);
+            Eyelink('command','set_idle_mode');
+            Eyelink('command','clear_screen 0'); % clears tracker display
+            % -------------------------------------------
+    end
+end
 
-    end % switch case
-    end % if begin_task 
-end     % while loop
-
-% Clear screen
-sca;
+% ------------------------------------------------- EEG
+parallel_port(10);   % Send end event to NetStation
+eventOnsets(event_) = GetSecs - start_exp;
+eventTime{event_}   = datetime('now');
+eventTypes{event_}  = 'DI10';  % Store the event type
+eventValues(event_) = 10;  % Store the event value
+eventSamples(event_)= round(eventOnsets(event_) * 500);  % Given 500 Hz sampling rate
+eventDurations(event_) = GetSecs - eventOnsets(event_);
+% ------------------------------------------------- Eyelink
+elFinish;
 
 % -------------------------------------------------------------------------
 %                          Convert Log File into TSV/XLSX
@@ -446,4 +543,61 @@ if exportTsv
 % Write the table to a TSV file
 writetable(eventTable, [event_path filesep data.text.eventFileName '.tsv'], 'FileType', 'text', 'Delimiter', 'tab');
 end
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+% % Get stimulus for first one using the ascii file an searching for .avi
+% % Get stimulus for first one using the sequences file and confirming
+% with the ascii file
+% % Add info to logFile
+
+% % Participant info:
+
+% SR001:
+% 57,5 cm 
+% 19*2
+% 17.5*2
+% 18º
+% No datetime information!
+% -------
+% SR002:
+% 60 cm
+% 36.5
+% 36
+% 18º
+% No datetime information!
+% -------
+% SR006:
+% 57.5 cm
+% 34
+% 36
+% 26º (not working)
+% Baseline was performed at the beginning of the second run.
+% -------
+% SR008:
+% 57 cm
+% 37
+% 36
+% 26º (not working)
+% -------
+% SR004:
+% 53.5 cm
+% 17*2
+% 16*2
+% Eye-tracking not good
+% Empatica only recorded for 2nd run
+% -------
+% SR007:
+% 56.5 cm
+% 17*2
+% 19*2
+% Geoscan not good
+% -------
+% SR011:
+% 55 cm
+% 16*2
+% 17*2
+% Geoscan interpolated around 10 electrodes, but looked good.
+% Empatica recording for longer than needed
+% ET not validated for first run
 

@@ -77,11 +77,11 @@ while trial_ <= n
             % -------------------------------------------
             countdown_from = 10; % Start countdown from 10
             for i = countdown_from:-1:1
-                Screen('TextSize', window_1, 60);
-                Screen('TextFont', window_1, 'Arial');
+                Screen('TextSize', window1, 60);
+                Screen('TextFont', window1, 'Arial');
                 message = sprintf(strcat(eval(strcat('data.text.starting', lanSuf)),' %d'), i);
-                DrawFormattedText(window_1, message, 'center', 'center', textColor);
-                Screen('Flip', window_1);
+                DrawFormattedText(window1, message, 'center', 'center', textColor);
+                Screen('Flip', window1);
                 WaitSecs(1);
             end
             % -------------------------------------------
@@ -98,23 +98,23 @@ while trial_ <= n
         case 98
             % You need to give clear instructions for when the subject
             % needs to open their eyes again
-            Screen('TextSize', window_1, 50);
-            DrawFormattedText(window_1, eval(strcat('data.text.baselineClosed', lanSuf)), 'center', 'center', textColor);
-            InitialDisplayTime = Screen('Flip', window_1);
+            Screen('TextSize', window1, 50);
+            DrawFormattedText(window1, eval(strcat('data.text.baselineClosed', lanSuf)), 'center', 'center', textColor);
+            InitialDisplayTime = Screen('Flip', window1);
             WaitSecs(5);
             countdown_from = 5; % Start countdown from 10
             for i = countdown_from:-1:1
-                Screen('TextSize', window_1, 60);
-                Screen('TextFont', window_1, 'Arial');
+                Screen('TextSize', window1, 60);
+                Screen('TextFont', window1, 'Arial');
                 message = sprintf(strcat( eval(strcat('data.text.starting', lanSuf)),' %d'), i);
-                DrawFormattedText(window_1, message, 'center', 'center', textColor);
-                Screen('Flip', window_1);
+                DrawFormattedText(window1, message, 'center', 'center', textColor);
+                Screen('Flip', window1);
                 WaitSecs(1);
             end
             % -------------------------------------------
             % Draw Cross
-            drawCross(window_1, W, H);
-            tFixation = Screen('Flip', window_1);
+            drawCross(window1, W, H);
+            tFixation = Screen('Flip', window1);
             % -------------------------------------------
             parallel_port(98);   % Send to NetStation
             eventOnsets(event_) = GetSecs - start_exp;
@@ -134,23 +134,23 @@ while trial_ <= n
 %                            Eyes open Baseline
 % -------------------------------------------------------------------------
         case 97
-            Screen('TextSize', window_1, 50);
-            DrawFormattedText(window_1, eval(strcat('data.text.baselineOpen', lanSuf)), 'center', 'center', textColor);
-            InitialDisplayTime = Screen('Flip', window_1);
+            Screen('TextSize', window1, 50);
+            DrawFormattedText(window1, eval(strcat('data.text.baselineOpen', lanSuf)), 'center', 'center', textColor);
+            InitialDisplayTime = Screen('Flip', window1);
             WaitSecs(5);
             countdown_from = 5; % Start countdown from 10
             for i = countdown_from:-1:1
-                Screen('TextSize', window_1, 60);
-                Screen('TextFont', window_1, 'Arial');
+                Screen('TextSize', window1, 60);
+                Screen('TextFont', window1, 'Arial');
                 message = sprintf(strcat( eval(strcat('data.text.starting', lanSuf)),' %d'), i);
-                DrawFormattedText(window_1, message, 'center', 'center', textColor);
-                Screen('Flip', window_1);
+                DrawFormattedText(window1, message, 'center', 'center', textColor);
+                Screen('Flip', window1);
                 WaitSecs(1);
             end
             % -------------------------------------------
             % Draw Cross
-            drawCross(window_1, W, H);
-            tFixation = Screen('Flip', window_1);
+            drawCross(window1, W, H);
+            tFixation = Screen('Flip', window1);
             parallel_port(97);   % Send to NetStation
             eventOnsets(event_) = GetSecs - start_exp;
             eventTypes{event_}  = 'DI97';  % Store the event type
@@ -169,9 +169,9 @@ while trial_ <= n
 %                             Message
 % -------------------------------------------------------------------------
         case 1
-            Screen('TextSize', window_1, 50);
-            DrawFormattedText(window_1, eval(strcat('data.text.getready', lanSuf)), 'center', 'center', textColor);
-            InitialDisplayTime = Screen('Flip', window_1);
+            Screen('TextSize', window1, 50);
+            DrawFormattedText(window1, eval(strcat('data.text.getready', lanSuf)), 'center', 'center', textColor);
+            InitialDisplayTime = Screen('Flip', window1);
             % ------------------------------------------- EEG
             parallel_port(1);   % Send to NetStation
             eventOnsets(event_) = GetSecs - start_exp;
@@ -196,8 +196,8 @@ while trial_ <= n
             data.format.resolx/2,data.format.resoly/2);
             Eyelink('Message','Fixation Cross');
             % -----------------------------------------
-            drawCross(window_1, W, H);
-            tFixation = Screen('Flip', window_1);
+            drawCross(window1, W, H);
+            tFixation = Screen('Flip', window1);
             parallel_port(2);   % Send to NetStation
             eventOnsets(event_) = GetSecs - start_exp;
             eventTypes{event_}  = 'DI2';  % Store the event type
@@ -234,14 +234,14 @@ while trial_ <= n
 
             try
                 % Open the movie, start playback paused
-                [movie, duration, fps, width, height, count, aspectRatio] = Screen('OpenMovie', window_1, file, 0, inf, 2);
+                [movie, duration, fps, width, height, count, aspectRatio] = Screen('OpenMovie', window1, file, 0, inf, 2);
                 Screen('SetMovieTimeIndex', movie, 0);  %Ensure the movie starts at the very beginning
 
                 % Get the first frame and display it
-                tex = Screen('GetMovieImage', window_1, movie, 1, 0);
+                tex = Screen('GetMovieImage', window1, movie, 1, 0);
                 if tex > 0  % If a valid texture was returned
-                    Screen('DrawTexture', window_1, tex, [], dst_rect);  % Draw the texture on the screen
-                    Screen('Flip', window_1);  % Update the screen to show the first frame
+                    Screen('DrawTexture', window1, tex, [], dst_rect);  % Draw the texture on the screen
+                    Screen('Flip', window1);  % Update the screen to show the first frame
                     % -------------------------------------------
                     parallel_port(3);   % Send to NetStation
                     eventOnsets(event_) = GetSecs - start_exp;
@@ -275,12 +275,12 @@ while trial_ <= n
                 % Play and display the movie
                 tex = 0;
                 while ~KbCheck && tex~=-1  % Continue until keyboard press or movie ends
-                    [tex, pts] = Screen('GetMovieImage', window_1, movie, 1);
+                    [tex, pts] = Screen('GetMovieImage', window1, movie, 1);
                     if tex > 0  % If a valid texture was returned
                         % Draw the texture on the screen
-                        Screen('DrawTexture', window_1, tex, [], dst_rect);
+                        Screen('DrawTexture', window1, tex, [], dst_rect);
                         % Update the screen to show the current frame
-                        Screen('Flip', window_1);
+                        Screen('Flip', window1);
                         % Release the texture
                         Screen('Close', tex);
                     end
@@ -305,28 +305,28 @@ while trial_ <= n
         case 5 
             % Set the mouse cursor to the center of the screen
             ShowCursor;
-            SetMouse(centerX, centerY, window_1);
+            SetMouse(centerX, centerY, window1);
             file_valence = fullfile(allstim_path,strcat('Score_Valence', lanSuf, '.png'));
             % Load the image from the file
             imageArray_valence = imread(file_valence);
             % Make texture from the image array
-            texture = Screen('MakeTexture', window_1, imageArray_valence);
+            texture = Screen('MakeTexture', window1, imageArray_valence);
             % Define the destination rectangle to draw the image in its original size
             dst_rect_valence = CenterRectOnPointd([0 0 size(imageArray_valence, 2) size(imageArray_valence, 1)], centerX, centerY);
             % Set text size and font
-            Screen('TextSize', window_1, 40);
-            Screen('TextFont', window_1, 'Arial');
+            Screen('TextSize', window1, 40);
+            Screen('TextFont', window1, 'Arial');
             % Initialize variables for circle clicks
             clicked_in_circle = false;
             clicked_circle_index = 0;
 
             while ~clicked_in_circle
                 % Draw the texture to the window
-                Screen('DrawTexture', window_1, texture, [], dst_rect_valence);
+                Screen('DrawTexture', window1, texture, [], dst_rect_valence);
                 % Draw circles
-                [start_x,y_position,space_between_circles,circle_radius] = drawCircles(centerX, centerY, imageArray_valence, window_1, 'surround', 0);
+                [start_x,y_position,space_between_circles,circle_radius] = drawCircles(centerX, centerY, imageArray_valence, window1, 'surround', 0);
                 % Update the display
-                ValenceTime = Screen('Flip', window_1); 
+                ValenceTime = Screen('Flip', window1); 
                 % -------------------------------------------
                 parallel_port(5);   % Send to NetStation
                 eventOnsets(event_) = GetSecs - start_exp;
@@ -335,7 +335,7 @@ while trial_ <= n
                 eventSamples(event_)= round(eventOnsets(event_) * 500);  % Given 500 Hz sampling rate
                 % -------------------------------------------
                 % Check for mouse clicks
-                [clicks, x, y, whichButton] = GetClicks(window_1, 0);
+                [clicks, x, y, whichButton] = GetClicks(window1, 0);
                 if clicks
                     for i = 1:9
                         current_x = start_x + (i-1) * space_between_circles;
@@ -348,9 +348,9 @@ while trial_ <= n
                             fprintf('Valence rating is %d\n', choiceValence(trial_))
                             elCreateVariables(trial_, videoFile, rt_valence(trial_)) % rt in ms
                             % Redraw all circles
-                            Screen('DrawTexture', window_1, texture, [], dst_rect_valence);
-                            drawCircles(centerX, centerY, imageArray_valence, window_1, 'surround', i);
-                            Screen('Flip', window_1);
+                            Screen('DrawTexture', window1, texture, [], dst_rect_valence);
+                            drawCircles(centerX, centerY, imageArray_valence, window1, 'surround', i);
+                            Screen('Flip', window1);
                             pause(0.5);
                             break;  % Exit the for loop since circle is found
                         end
@@ -367,28 +367,28 @@ while trial_ <= n
 % -------------------------------------------------------------------------            
         
         case 6
-            SetMouse(centerX, centerY, window_1);
+            SetMouse(centerX, centerY, window1);
             file_arousal = fullfile(allstim_path,strcat('Score_Arousal', lanSuf, '.png'));
             % Load the image from the file
             imageArray_arousal = imread(file_arousal);
             % Make texture from the image array
-            texture = Screen('MakeTexture', window_1, imageArray_arousal);
+            texture = Screen('MakeTexture', window1, imageArray_arousal);
             % Define the destination rectangle to draw the image in its original size
             dst_rect_arousal = CenterRectOnPointd([0 0 size(imageArray_arousal, 2) size(imageArray_arousal, 1)], centerX, centerY);
             % Set text size and font
-            Screen('TextSize', window_1, 40);
-            Screen('TextFont', window_1, 'Arial');
+            Screen('TextSize', window1, 40);
+            Screen('TextFont', window1, 'Arial');
             % Initialize variables for circle clicks
             clicked_in_circle = false;
             clicked_circle_index = 0;
 
             while ~clicked_in_circle
                 % Draw the texture to the window
-                Screen('DrawTexture', window_1, texture, [], dst_rect_arousal);
+                Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
                 % Draw circles
-                [start_x,y_position,space_between_circles,circle_radius] = drawCircles(centerX, centerY, imageArray_arousal, window_1, 'surround', 0);
+                [start_x,y_position,space_between_circles,circle_radius] = drawCircles(centerX, centerY, imageArray_arousal, window1, 'surround', 0);
                 % Update the display
-                ArousalTime = Screen('Flip', window_1);
+                ArousalTime = Screen('Flip', window1);
                 % -------------------------------------------
                 parallel_port(6);   % Send to NetStation
                 eventOnsets(event_) = GetSecs - start_exp;
@@ -397,7 +397,7 @@ while trial_ <= n
                 eventSamples(event_)= round(eventOnsets(event_) * 500);  % Given 500 Hz sampling rate
                 % -------------------------------------------
                 % Check for mouse clicks
-                [clicks, x, y, whichButton] = GetClicks(window_1, 0);
+                [clicks, x, y, whichButton] = GetClicks(window1, 0);
                 if clicks
                     for i = 1:9
                         current_x = start_x + (i-1) * space_between_circles;
@@ -410,9 +410,9 @@ while trial_ <= n
                             fprintf('Arousal rating is %d\n', choiceArousal(trial_))
                             elCreateVariables(trial_, videoFile, rt_arousal(trial_))
                             % Redraw all circles
-                            Screen('DrawTexture', window_1, texture, [], dst_rect_arousal);
-                            drawCircles(centerX, centerY, imageArray_arousal, window_1, 'surround', i);
-                            Screen('Flip', window_1);
+                            Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
+                            drawCircles(centerX, centerY, imageArray_arousal, window1, 'surround', i);
+                            Screen('Flip', window1);
                             pause(0.5);
                             HideCursor;
                             break;  % Exit the for loop since circle is found
@@ -431,9 +431,9 @@ while trial_ <= n
 
         case 7
             % Fill the screen with white color
-            Screen('FillRect', window_1, [255 255 255]);  % Assuming 0 is the color code for black
+            Screen('FillRect', window1, [255 255 255]);  % Assuming 0 is the color code for black
             % Update the display to show the black screen
-            BlankTime = Screen('Flip', window_1);
+            BlankTime = Screen('Flip', window1);
             % -------------------------------------------
             parallel_port(7);   % Send to NetStation
             eventOnsets(event_) = GetSecs - start_exp;

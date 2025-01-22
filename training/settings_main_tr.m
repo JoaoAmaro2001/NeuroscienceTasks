@@ -110,7 +110,7 @@ Screen('Preference','VisualDebugLevel', 0); % Minimum amount of diagnostic outpu
 %                       Initialise Eyelink +  Screen
 % -------------------------------------------------------------------------
 edfFileName = [data.input{1} '_' data.input{3}]; % cannot have more than 8 chars
-[window_1, rect, el] = eyelinkExperiment2(screenNumber, edfFileName, data);
+[window1, rect, el] = eyelinkExperiment2(screenNumber, edfFileName, data);
 
 % -------------------------------------------------------------------------
 %                             Get Screen Center

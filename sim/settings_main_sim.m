@@ -62,7 +62,7 @@ end
 save(fullfile(sequence_path, eventSequence), 'sequence')
 
 % save information from chosen sequence in the 'data' structure
-data.sequences.files      = sequence.sequenceFiles;
+data.sequences.files      = sequence.sequenceFiles(end:-1:1);
 
 
 % ------------------------------------------------------------------------%
@@ -81,14 +81,14 @@ if data.screen_num == 1
 whichScreenMin = min(Screen('Screens')); % Get the screen numbers
 resolution = get(0,'ScreenSize'); % Get resolution
 [screenWidth, screenHeight] = Screen('WindowSize', whichScreenMin); % Get the screen size
-[window_1, rect] = Screen('OpenWindow', whichScreenMin, backgroundColor, [0 0 screenWidth/2, screenHeight/2]);
+[window1, rect] = Screen('OpenWindow', whichScreenMin, backgroundColor, [0 0 screenWidth/2, screenHeight/2]);
                             % ----------%
                             % 2 SCREENS %
                             % ----------%
 elseif data.screen_num == 2
     secondaryScreen = max(Screen('Screens')); % Use the secondary screen
     [screenWidth, screenHeight] = Screen('WindowSize', secondaryScreen); % Get screen dimensions
-    [window_1, rect] = Screen('OpenWindow', secondaryScreen, backgroundColor);
+    [window1, rect] = Screen('OpenWindow', secondaryScreen, backgroundColor);
     resolution = [0, 0, screenWidth, screenHeight];
 end
 
@@ -99,15 +99,15 @@ data.format.resolx = resolution(3);
 data.format.resoly = resolution(4);
 
 % Calculate screen center and other parameters
-slack = Screen('GetFlipInterval', window_1) / 2; % Half refresh interval
+slack = Screen('GetFlipInterval', window1) / 2; % Half refresh interval
 W = rect(3); % Screen width
 H = rect(4); % Screen height
 centerX = W / 2; % X center
 centerY = H / 2; % Y center
 
 % Fill screen with background color and update display
-Screen('FillRect', window_1, backgroundColor);
-Screen('Flip', window_1);
+Screen('FillRect', window1, backgroundColor);
+Screen('Flip', window1);
 
 
 % -------------------------------------------------------------------------

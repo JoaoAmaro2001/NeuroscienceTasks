@@ -4,7 +4,7 @@
 
 % -------------------------------------------------------------------------
 clear; close all; clc;     % Clean workspace
-setpath_exp2mri;           % Set all paths
+setpath;           % Set all paths
 settings_main_sim;         % Load all the settings from the file
 HideCursor;
 
@@ -86,9 +86,9 @@ while trial_ <= n
             if run==2
             start_exp = GetSecs;
             end
-            Screen('TextSize', window_1, 50);
-            DrawFormattedText(window_1, eval(strcat('data.text.getready', lanSuf)), 'center', 'center', textColor);
-            InitialDisplayTime = Screen('Flip', window_1);
+            Screen('TextSize', window1, 50);
+            DrawFormattedText(window1, eval(strcat('data.text.getready', lanSuf)), 'center', 'center', textColor);
+            InitialDisplayTime = Screen('Flip', window1);
             % ------------------------------------------- EEG
             eventOnsets(event_) = GetSecs - start_exp;
             eventTime{event_}   = datetime('now');
@@ -106,8 +106,8 @@ while trial_ <= n
 % -------------------------------------------------------------------------
         case 2
             % -----------------------------------------
-            drawCross(window_1, W, H);
-            tFixation = Screen('Flip', window_1);
+            drawCross(window1, W, H);
+            tFixation = Screen('Flip', window1);
             eventOnsets(event_) = GetSecs - start_exp;
             eventTime{event_}   = datetime('now');
             eventTypes{event_}  = 'DI2';  % Store the event type
@@ -140,14 +140,14 @@ while trial_ <= n
 
             try
                 % Open the movie, start playback paused
-                [movie, duration, fps, width, height, count, aspectRatio] = Screen('OpenMovie', window_1, file, 0, inf, 2);
+                [movie, duration, fps, width, height, count, aspectRatio] = Screen('OpenMovie', window1, file, 0, inf, 2);
                 Screen('SetMovieTimeIndex', movie, 0);  %Ensure the movie starts at the very beginning
 
                 % Get the first frame and display it
-                tex = Screen('GetMovieImage', window_1, movie, 1, 0);
+                tex = Screen('GetMovieImage', window1, movie, 1, 0);
                 if tex > 0  % If a valid texture was returned
-                    Screen('DrawTexture', window_1, tex, [], dst_rect);  % Draw the texture on the screen
-                    Screen('Flip', window_1);  % Update the screen to show the first frame
+                    Screen('DrawTexture', window1, tex, [], dst_rect);  % Draw the texture on the screen
+                    Screen('Flip', window1);  % Update the screen to show the first frame
                     % -------------------------------------------
                     eventOnsets(event_) = GetSecs - start_exp;
                     eventTime{event_}   = datetime('now');
@@ -181,12 +181,12 @@ while trial_ <= n
                 % Play and display the movie
                 tex = 0;
                 while ~KbCheck && tex~=-1  % Continue until keyboard press or movie ends
-                    [tex, pts] = Screen('GetMovieImage', window_1, movie, 1);
+                    [tex, pts] = Screen('GetMovieImage', window1, movie, 1);
                     if tex > 0  % If a valid texture was returned
                         % Draw the texture on the screen
-                        Screen('DrawTexture', window_1, tex, [], dst_rect);
+                        Screen('DrawTexture', window1, tex, [], dst_rect);
                         % Update the screen to show the current frame
-                        Screen('Flip', window_1);
+                        Screen('Flip', window1);
                         % Release the texture
                         Screen('Close', tex);
                     end
@@ -208,19 +208,19 @@ while trial_ <= n
     ShowCursor; % If you want to see the cursor, otherwise HideCursor if not needed
     file_valence = fullfile(allstim_path, strcat('Score_Valence', lanSuf, '.png'));
     imageArray_valence = imread(file_valence);
-    texture = Screen('MakeTexture', window_1, imageArray_valence);
+    texture = Screen('MakeTexture', window1, imageArray_valence);
     dst_rect_valence = CenterRectOnPointd([0 0 size(imageArray_valence,2) size(imageArray_valence,1)], centerX, centerY);
-    Screen('TextSize', window_1, 40);
-    Screen('TextFont', window_1, 'Arial');
+    Screen('TextSize', window1, 40);
+    Screen('TextFont', window1, 'Arial');
     
     clicked_in_circle = false;
     pos = 5;  % Start at circle #5 (middle)
     while ~clicked_in_circle
-        Screen('DrawTexture', window_1, texture, [], dst_rect_valence);
+        Screen('DrawTexture', window1, texture, [], dst_rect_valence);
         % Draw circles, highlighting the current pos
-        [start_x,y_position,space_between_circles,circle_radius] = drawCircles(centerX, centerY, imageArray_valence, window_1, 'surround', pos);
+        [start_x,y_position,space_between_circles,circle_radius] = drawCircles(centerX, centerY, imageArray_valence, window1, 'surround', pos);
         
-        ValenceTime = Screen('Flip', window_1);
+        ValenceTime = Screen('Flip', window1);
         eventOnsets(event_) = GetSecs - start_exp;
         eventTime{event_}   = datetime('now');
         eventTypes{event_}  = 'DI5';
@@ -253,9 +253,9 @@ while trial_ <= n
                 clicked_in_circle     = true;
                 fprintf('Valence rating is %d\n', choiceValence(trial_));
                 % Redraw final highlight
-                Screen('DrawTexture', window_1, texture, [], dst_rect_valence);
-                drawCircles(centerX, centerY, imageArray_valence, window_1, 'surround', pos, 'color', data.rgb.green);
-                Screen('Flip', window_1);
+                Screen('DrawTexture', window1, texture, [], dst_rect_valence);
+                drawCircles(centerX, centerY, imageArray_valence, window1, 'surround', pos, 'color', data.rgb.green);
+                Screen('Flip', window1);
                 pause(0.5);
             end
         end
@@ -271,18 +271,18 @@ while trial_ <= n
         ShowCursor;
         file_arousal = fullfile(allstim_path, strcat('Score_Arousal', lanSuf, '.png'));
         imageArray_arousal = imread(file_arousal);
-        texture = Screen('MakeTexture', window_1, imageArray_arousal);
+        texture = Screen('MakeTexture', window1, imageArray_arousal);
         dst_rect_arousal = CenterRectOnPointd([0 0 size(imageArray_arousal,2) size(imageArray_arousal,1)], centerX, centerY);
-        Screen('TextSize', window_1, 40);
-        Screen('TextFont', window_1, 'Arial');
+        Screen('TextSize', window1, 40);
+        Screen('TextFont', window1, 'Arial');
         
         clicked_in_circle = false;
         pos = 5;  % Start at circle #5
         while ~clicked_in_circle
-            Screen('DrawTexture', window_1, texture, [], dst_rect_arousal);
-            [start_x,y_position,space_between_circles,circle_radius] = drawCircles(centerX, centerY, imageArray_arousal, window_1, 'surround', pos);
+            Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
+            [start_x,y_position,space_between_circles,circle_radius] = drawCircles(centerX, centerY, imageArray_arousal, window1, 'surround', pos);
             
-            ArousalTime = Screen('Flip', window_1);
+            ArousalTime = Screen('Flip', window1);
             eventOnsets(event_) = GetSecs - start_exp;
             eventTime{event_}   = datetime('now');
             eventTypes{event_}  = 'DI6';
@@ -311,9 +311,9 @@ while trial_ <= n
                     choiceArousal(trial_)= pos;
                     clicked_in_circle = true;
                     fprintf('Arousal rating is %d\n', choiceArousal(trial_));
-                    Screen('DrawTexture', window_1, texture, [], dst_rect_arousal);
-                    drawCircles(centerX, centerY, imageArray_arousal, window_1, 'surround', pos, 'color', data.rgb.green);
-                    Screen('Flip', window_1);
+                    Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
+                    drawCircles(centerX, centerY, imageArray_arousal, window1, 'surround', pos, 'color', data.rgb.green);
+                    Screen('Flip', window1);
                     pause(0.5);
                     HideCursor;
                 end
@@ -330,9 +330,9 @@ while trial_ <= n
         
         case 7
             % Fill the screen with white color
-            Screen('FillRect', window_1, [255 255 255]);  % Assuming 0 is the color code for black
+            Screen('FillRect', window1, [255 255 255]);  % Assuming 0 is the color code for black
             % Update the display to show the black screen
-            BlankTime = Screen('Flip', window_1);
+            BlankTime = Screen('Flip', window1);
             % -------------------------------------------
             eventOnsets(event_) = GetSecs - start_exp;
             eventTime{event_}   = datetime('now');
