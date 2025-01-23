@@ -19,7 +19,6 @@ data.dir.data_path     = fullfile(root_dir, 'data');
 
 % Debugging mode
 data.debug                     = true;
-
 % Task parameters
 data.task.handedness           = 2;
 data.task.number_states        = 6;
@@ -102,8 +101,9 @@ end
 % ------------------------------------------------------------------------%
 
 % Screen preferences
-Screen('Preference', 'SkipSyncTests', 0);   
-Screen('Preference','VisualDebugLevel', 1); 
+Screen('Preference', 'Verbosity', 0);
+Screen('Preference', 'SkipSyncTests', 1);   
+Screen('Preference', 'VisualDebugLevel', 1); 
 
 % Get the screens
 screens        = Screen('Screens');
@@ -119,20 +119,32 @@ end
 
 % Draw initial screen
 [window1, rect] = Screen('Openwindow',screen_number,data.format.background_color); 
-slack = Screen('GetFlipInterval', window1)/2;   
-W=rect(RectRight);  % screen width
-H=rect(RectBottom); % screen height
-
+slack           = Screen('GetFlipInterval', window1)/2;   
+  
 % Screen parameters
 data.screen.output_screen = screen_number; 
 data.screen.resolx  = resolution(3);
 data.screen.resoly  = resolution(4);
-data.screen.centerx = W / 2;                   % x center
-data.screen.centery = H / 2;                   % y center
-data.screen.resizex = 1; % Factor to resize image in x-axis (1 = 1x smaller)
-data.screen.resizey = 1; % Factor to resize image in y-axis (1 = 1x smaller)
-data.screen.sizex   = data.screen.resolx/data.screen.resizex; 
-data.screen.sizey   = data.screen.resoly/data.screen.resizey;
+data.screen.pixelx  = rect(RectRight);
+data.screen.pixely  = rect(RectBottom);
+data.screen.centerx = data.screen.pixelx / 2;  % x center
+data.screen.centery = data.screen.pixely / 2;  % y center
+data.screen.resizex = 1.5; % Factor to resize image in x-axis (1 = 1x smaller)
+data.screen.resizey = 1.5; % Factor to resize image in y-axis (1 = 1x smaller)
+data.screen.sizex   = data.screen.pixelx/data.screen.resizex; 
+data.screen.sizey   = data.screen.pixely/data.screen.resizey;
+
+% ------------------------------------------------------------------------%
+%                               Debug mode                                %
+% ------------------------------------------------------------------------%
+
+if data.debug
+    data.task.handedness           = 1;
+    % Screen
+    Screen('Preference', 'Verbosity', 10);
+    Screen('Preference', 'SkipSyncTests', 1);   
+    Screen('Preference', 'VisualDebugLevel', 1); 
+end
 
 % ------------------------------------------------------------------------%
 %                               Modalities                                %
@@ -217,6 +229,9 @@ end
 % ------------------------------------------------------------------------%
 %                               Software                                  %
 % ------------------------------------------------------------------------%
-AssertOpenGL; % gives warning if running in PC with non-OpenGL based PTB
 data.matlab       = matlabRelease;
 data.psychtoolbox = PsychtoolboxVersion;
+
+% Further debugging
+AssertOpenGL; % gives warning if running in PC with non-OpenGL based PTB
+% Screen('OpenWindow', 0); % Open a test window
