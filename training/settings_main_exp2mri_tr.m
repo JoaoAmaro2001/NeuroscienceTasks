@@ -7,7 +7,7 @@ setpath_exp2mri; cd(root_dir); data = struct();
 %                            Directories                                  %
 % ------------------------------------------------------------------------%
 data.dir.allstim_path  = fullfile(root_dir, 'supp', 'allStimuli');
-data.dir.stim_path     = fullfile(root_dir, 'supp', 'stimuli');
+data.dir.stim_path     = fullfile(root_dir, 'supp', 'trainingStimuli');
 data.dir.logs_path     = fullfile(root_dir, 'supp', 'logfiles');
 data.dir.event_path    = fullfile(root_dir, 'supp', 'events');
 data.dir.sequence_path = fullfile(root_dir, 'supp', 'sequences');
@@ -86,18 +86,8 @@ data.output.export_tsv          = true;
 % select sequence to use
 if str2double(data.input{3}) == 1
     data.task.run = 1;
-    createStimulusSequence(root_dir,...
-        'FilesPerRun',data.task.stims_per_run, 'NumRuns', data.task.number_run)
-    sequence1     = load('sequences\sequence1.mat');
     % save information from chosen sequence in the 'data' structure
-    data.stim.files = sequence1.sequenceFiles1;
-    save(fullfile(data.dir.sequence_path, data.output.event_sequence), 'sequence1')
-elseif str2double(data.input{3}) == 2
-    data.task.run = 2;
-    sequence2     = load('sequences\sequence2.mat');
-    % save information from chosen sequence in the 'data' structure
-    data.stim.files = sequence2.sequenceFiles2;
-    save(fullfile(data.dir.sequence_path, data.output.event_sequence), 'sequence2')
+    data.stim.files = {'A1_video.avi', 'C28_video.avi', 'C31_video.avi'};
 else
     warning('Selected sequence does not exist');
 end
