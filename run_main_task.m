@@ -12,14 +12,22 @@
 % 9) sub-PID_PR_006
 % 10)sub-PID_PR_007
 % 11)sub-PID_PR_008
-% 12)sub-PID_PR_009
+% 12)sub-PID_PR_009 -> exp.1 task only (exclude)
+% 13)sub-PID_PR_010 -> 2-handed and task issues (exclude)
+% 14)sub-PID_PL_011 -> Mapping joystick-answer compromised in beginning
+% 15)sub-PID_PL_012 -> Coughed and sneezed - Images compromised
+% 16)sub-PID_CR_004 -> Mapping joystick-answer compromised in beginning
+% 17)sub-PID_PR_013
+% 18)sub-PID_PR_014
+% 19)sub-PID_PR_015
+% 20)sub-PID_CL_005
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 clear, clc, close all
 init_experiment;
 sub_id     = input("Write the participant's id code:\n", 's');
 task       = 'sentences';
 lang       = '_pt';  % _en for english and _pt for portuguese
-handedness = 1;      % 1 for one handed or 2 for two handed joysticks
+handedness = 2;      % 1 for one handed or 2 for two handed joysticks
 settings_main;       % Load all the settings from the file
 
 % -------------------------------------------------------------------------
@@ -47,8 +55,9 @@ flag_screen = 1;                    % Flag for updating screen
 flag_resp   = 1;                    % Flag for response -> can only respond while is 1
 flag_first  = 1;                    % Flag for first time reading the aux
 boldOption  = [];                   % Variable that carries response info
-true_tr_time= NaN;                  % Init variable holding true time for the TR value
+true_tr_time= 0;                    % Init variable holding true time for the TR value
 beg_cross   = 0;                    % Variable telling if we have already reached a cross block
+aux_button  = [];                   % Vatiable holding information for two-handed joystick answers
 % LOG INFO
 rt_num      = zeros(1,32);          % Reaction time for response
 res_num     = zeros(1,32);          % Response number
@@ -83,8 +92,8 @@ while 1
 
     % FMRI SERIAL PORT COMMUNICATION
     if tr_trigger == -1
-        flush(s)
         aux = read(s,1,'uint8'); disp(aux);
+        flush(s)
         prevDigit = -1;  % Initialize prevDigit to a value that firstDigit will never be
         init_time = tic;
     else
@@ -105,9 +114,6 @@ while 1
     if keyIsDown
         if keyCode(terminateKey) % Check if the terminate key was pressed
             break % Exit the function or script
-        end
-        if keyCode(hotkey) % Check if the hotkey was pressed
-            aux = 115;
         end
     end
     
@@ -176,12 +182,18 @@ while 1
     end
 
     if (state == 2 || state == 3) && flag_resp && handedness == 2 && tr_trigger ~= -1
+        if s.NumBytesAvailable > 0
+            aux_button = read(s,1,'uint8'); disp(aux_button);
+            flush(s)
+        end
         if state == 2
             text_input = eval(strcat('textActiveStimuli', lang));
+            trialnumi  = trial_act;
         elseif state == 3
             text_input = eval(strcat('textNeutralStimuli', lang));
+            trialnumi  = trial_neu;
         end
-        if aux == button1
+        if aux_button == button1
             boldOption              = 1;
             drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -192,7 +204,7 @@ while 1
             res_txt{trial_num}      = responseOptions{1}; 
             flag_resp               = 0;
             boldOption              = [];
-        elseif aux == button2
+        elseif aux_button == button2
             boldOption              = 2;
             drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -203,7 +215,7 @@ while 1
             res_txt{trial_num}      = responseOptions{2}; 
             flag_resp               = 0;
             boldOption              = [];
-        elseif aux == button3
+        elseif aux_button == button3
             boldOption              = 3;
             drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -214,7 +226,7 @@ while 1
             res_txt{trial_num}      = responseOptions{3}; 
             flag_resp               = 0;
             boldOption              = [];
-        elseif aux == button4
+        elseif aux_button == button4
             boldOption              = 4;
             drawText(window1, text_input, trialnumi, W, H, backgroundColor, textColor)
             addResponseOptions(window1, responseOptions, boldOption)
@@ -226,6 +238,7 @@ while 1
             flag_resp               = 0;
             boldOption              = [];
         end
+        aux_button = []; % reset aux_button
     end
 
     % TR-DEPENDENT STIMULUS CONTROL 
@@ -237,15 +250,15 @@ while 1
             fprintf('First trigger received - beginning volumes\n')
         end
 
-        % TRUE TR TRIGGERS
-        if s.NumBytesAvailable > 0
-            true_tr = read(s,1,'uint8');
-            if ~isempty(true_tr) && (true_tr == 115)
-                true_tr_time = GetSecs();
-                fprintf('Fetching TRUE TR at %f seconds \n', true_tr_time - start_exp)
-            end
-            flush(s)
-        end
+        % % TRUE TR TRIGGERS
+        % if s.NumBytesAvailable > 0
+        %     true_tr = read(s,1,'uint8');
+        %     if ~isempty(true_tr) && (true_tr == 115)
+        %         true_tr_time = GetSecs();
+        %         fprintf('Fetching TRUE TR at %f seconds \n', true_tr_time - start_exp)
+        %     end
+        %     flush(s)
+        % end
         
         switch state
 
