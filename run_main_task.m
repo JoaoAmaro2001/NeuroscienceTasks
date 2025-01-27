@@ -3,13 +3,15 @@
 % Participants:
 % 1) sub-PID_PR_008
 % 2) sub-PID_PR_009
+% 1) sub-PID_PR_008
+% 2) sub-PID_PR_009646
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 clear, clc, close all
 init_experiment;
 sub_id     = input("Write the participant's id code:\n", 's');
 task       = 'sentences';
 lang       = '_pt';  % _en for english and _pt for portuguese
-handedness = 1;      % 1 for one handed or 2 for two handed joysticks
+handedness = 2;      % 1 for one handed or 2 for two handed joysticks
 settings_main;       % Load all the settings from the file
 
 % -------------------------------------------------------------------------
@@ -30,6 +32,7 @@ evt_counter = 0;                    % Counter for new stored events
 flag_resp   = 0;                    % Flag for response -> can only respond while is 1
 flag_answer = 0;                    % FLag to know if subject answered
 true_tr_time= 0;                    % Init variable holding true time for the TR value
+aux_button  = [];
 first_trigger=0;
 % LOG INFO
 rt_num      = zeros(1,stimuli_number);          % Reaction time for response
@@ -109,9 +112,9 @@ while 1
         if keyCode(terminateKey) % Check if the terminate key was pressed
             break % Exit the function or script
         end
-        if keyCode(hotkey) % Check if the hotkey was pressed
-            aux = 115;
-        end
+        % if keyCode(hotkey) % Check if the hotkey was pressed
+        %     aux = 115;
+        % end
     end
     
     % BUTTON CHECK CONTROL CONTROL (one-handed joystick)
@@ -205,8 +208,11 @@ while 1
     
     % BUTTON CHECK CONTROL CONTROL (two-handed joystick)
     if state == 3 && flag_resp && handedness == 2 && tr_trigger ~= -1
-        [keyIsDown, ~, keyCode] = KbCheck; 
-        if keyIsDown && keyCode(button1)
+        if s.NumBytesAvailable > 0
+            aux_button = read(s,1,'uint8'); disp(aux_button);
+            flush(s)
+        end        
+        if aux_button == button1
             disp('button1-------------------------------------------')
             flag_answer = 1;
             % Update screen
@@ -227,7 +233,7 @@ while 1
             res_num(trial_num)      = 1;  
             flag_resp               = 0;
         end
-        if keyIsDown && keyCode(button2)
+        if aux_button == button2
             disp('button2-------------------------------------------')
             flag_answer = 1;            
             % Update screen
@@ -248,7 +254,7 @@ while 1
             res_num(trial_num)      = 2;  
             flag_resp               = 0;
         end
-        if keyIsDown && keyCode(button3)
+        if aux_button == button3
             disp('button3-------------------------------------------')
             flag_answer = 1;            
             % Update screen
@@ -269,7 +275,7 @@ while 1
             res_num(trial_num)      = 3;  
             flag_resp               = 0;
         end
-        if keyIsDown && keyCode(button4)
+        if aux_button == button4
             disp('button4-------------------------------------------')
             flag_answer = 1;            
             % Update screen
@@ -290,6 +296,7 @@ while 1
             res_num(trial_num)      = 4;  
             flag_resp               = 0;
         end
+        aux_button = []; % reset aux_button
     end
 
 
