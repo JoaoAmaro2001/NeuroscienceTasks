@@ -3,7 +3,7 @@ init_experiment;
 sub_id     = input("Write the participant's id code:\n", 's');
 task       = 'sentences';
 lang       = '_pt';  % _en for english and _pt for portuguese
-handedness = 1;      % 1 for one handed or 2 for two handed joysticks
+handedness = 2;      % 1 for one handed or 2 for two handed joysticks
 settings_training;   % Load all the settings from the file
 
 % -------------------------------------------------------------------------

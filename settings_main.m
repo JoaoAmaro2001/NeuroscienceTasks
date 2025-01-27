@@ -17,7 +17,7 @@ stimuli_number = 80; % Number of stimuli
 backgroundColor = 255;                          % Background color: choose a number from 0 (black) to 255 (white)
 textColor       = 0;                            % Text color: choose a number from 0 (black) to 255 (white)
 clear screen
-Screen('Preference', 'SkipSyncTests', 1);       % Skip synch tests only when testing
+Screen('Preference', 'SkipSyncTests', 0);       % Skip synch tests only when testing
 Screen('Preference','VisualDebugLevel', 1);     % Minimum amount of diagnostic output
 whichScreen = max(Screen('Screens'));           % Get the screen numbers
 [window1, rect] = Screen('Openwindow',whichScreen,backgroundColor,[],[],2); % Use with 2 screens
@@ -58,6 +58,7 @@ Screen('Flip', window1);                        % Updates the screen (flip the o
 %     False for synchronization mode. True for simulation mode.
 
 try
+    % joystick_port = serialport('COM5', 57600);
     s = serialport('COM6', 57600);   % The stimbox works at 57600 s/s
     s.Timeout = 0.01;                % Timeout to fetch real TR signal
     disp('Serial port communication is set.')
@@ -225,3 +226,21 @@ responseOptions_en = {
 
 % PsychtoolboxVersion     % Get the Psychtoolbox version
 % PerceptualVBLSyncTest   % Perform test for synch issues
+
+% while 1
+%     % if s.NumBytesAvailable > 0 
+%     true_tr = read(s,1,'uint8');
+%     disp(true_tr)
+%     fprintf('Have %d bits in the port\n', s.NumBytesAvailable)         
+%     flush(s)
+%     % end
+% end
+
+% while 1
+%     [keyIsDown, ~, keyCode] = KbCheck; % Check for keyboard press
+%     if keyIsDown
+%         if keyCode(hotkey) % Check if the hotkey was pressed
+%             aux = 115
+%         end
+%     end
+% end
