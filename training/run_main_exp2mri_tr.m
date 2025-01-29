@@ -2,9 +2,9 @@
 % Hit 'esc' to terminate the task
 % -------------------------------------------------------------------------
 
-clear; close all; clc; % Clean workspace
+clear; close all; clc;    % Clean workspace
 settings_main_exp2mri_tr; % Load all the settings from the file
-HideCursor;            % Hide cursor
+HideCursor;               % Hide cursor
 
 % -------------------------------------------------------------------------
 %                           State Information:
@@ -172,20 +172,22 @@ while trialCounter <= n
             % Don't allow more answers
             flag_resp  = 0;
             flag_input = 0;
+            rating_value = NaN;
         elseif state==4 && flag_input
             rt_arousal(trialCounter)     = toc(arousal_time);
             choice_arousal(trialCounter) = rating_value;   
             % Redraw all the circles with highlighted answer
             Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
-            drawCircles(data.screen.centerx, data.screen.centery, imageArray_valence, window1, 'surround', rating_value, 'numAnswers', 4);
+            drawCircles(data.screen.centerx, data.screen.centery, imageArray_arousal, window1, 'surround', rating_value, 'numAnswers', 4);
             Screen('Flip', window1);
             % Don't allow more answers
             flag_resp  = 0;
-            flag_input = 0;            
+            flag_input = 0;   
+            rating_value = NaN;
         end
     end
 
-    if (state == 2 || state == 3) && flag_resp && data.task.handedness == 2
+    if (state == 3 || state == 4) && flag_resp && data.task.handedness == 2
         if s.NumBytesAvailable > 0
             aux = read(s,1,'uint8');
             flush(s)
@@ -207,27 +209,34 @@ while trialCounter <= n
             flag_input   = 1;            
             rating_value = 4; fprintf('Answer - %d\n',rating_value)
         end
-        if state==3 && flag_input
-            rt_valence(trialCounter)     = toc(valence_time);
-            choice_valence(trialCounter) = rating_value;   
-            % Redraw all the circles with highlighted answer
-            Screen('DrawTexture', window1, texture, [], dst_rect_valence);
-            drawCircles(data.screen.centerx, data.screen.centery, imageArray_valence, window1, 'surround', rating_value, 'numAnswers', 4);
-            Screen('Flip', window1);
-            % Don't allow more answers
-            flag_resp  = 0;
-            flag_input = 0;       
-        elseif state==4 && flag_input
-            rt_arousal(trialCounter)     = toc(arousal_time);
-            choice_arousal(trialCounter) = rating_value;   
-            % Redraw all the circles with highlighted answer
-            Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
-            drawCircles(data.screen.centerx, data.screen.centery, imageArray_valence, window1, 'surround', rating_value, 'numAnswers', 4);
-            Screen('Flip', window1);
-            % Don't allow more answers
-            flag_resp  = 0;
-            flag_input = 0;            
+        aux = []; % reset aux
+        switch state
+            case 3
+            if flag_input
+                rt_valence(trialCounter)     = toc(valence_time);
+                choice_valence(trialCounter) = rating_value;   
+                % Redraw all the circles with highlighted answer
+                Screen('DrawTexture', window1, texture, [], dst_rect_valence);
+                drawCircles(data.screen.centerx, data.screen.centery, imageArray_valence, window1, 'surround', rating_value, 'numAnswers', 4);
+                Screen('Flip', window1);
+                % Don't allow more answers
+                flag_resp  = 0;
+                flag_input = 0;
+            end
+            case 4
+            if flag_input
+                rt_arousal(trialCounter)     = toc(arousal_time);
+                choice_arousal(trialCounter) = rating_value;   
+                % Redraw all the circles with highlighted answer
+                Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
+                drawCircles(data.screen.centerx, data.screen.centery, imageArray_arousal, window1, 'surround', rating_value, 'numAnswers', 4);
+                Screen('Flip', window1);
+                % Don't allow more answers
+                flag_resp  = 0;
+                flag_input = 0;  
+            end
         end
+        rating_value = NaN; % reset rating
     end
 
 % ------------------------------------------------------------------------%

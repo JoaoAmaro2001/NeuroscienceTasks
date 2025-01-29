@@ -96,6 +96,7 @@ while trialCounter <= n
             trueTrCount= trueTrCount + 1;
             begin_task = true;
             init_time  = tic;
+            fprintf('Received first trigger: TR nº0 at %f seconds\n', toc(init_time))
         end
     % Simulate first trigger (debug mode)
     elseif trueTrCount == -1 && data.debug
@@ -108,6 +109,7 @@ while trialCounter <= n
         firstDigit = str2double(num2str(floor(timetmp)));
         if mod(firstDigit, 2) == 0 && firstDigit ~= prevDigit && firstDigit ~= 0
             % create event
+            fprintf('TR nº%d - at %f seconds\n', simTrCount,toc(init_time))
             [event_table,eventCounter,simTrCount] = create_event(event_table,...
             eventCounter, simTrCount, "SimTR", toc(init_time), datetime('now','Format','dd-MMM-yyyy HH:mm:ss.SS'));
         end
@@ -122,7 +124,7 @@ while trialCounter <= n
                 % create event
                 [event_table,eventCounter,trueTrCount] = create_event(event_table,...
                 eventCounter, trueTrCount, "TrueTR", toc(init_time), datetime('now','Format','dd-MMM-yyyy HH:mm:ss.SS'));
-                fprintf('Fetching mri trigger at %f seconds\n', toc(init_time));
+                fprintf('Fetching mri trigger at %f seconds - TR nº%d\n', toc(init_time), trueTrCount);
             end
             flush(s)
         end
@@ -178,7 +180,7 @@ while trialCounter <= n
             choice_arousal(trialCounter) = rating_value;   
             % Redraw all the circles with highlighted answer
             Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
-            drawCircles(data.screen.centerx, data.screen.centery, imageArray_valence, window1, 'surround', rating_value, 'numAnswers', 4);
+            drawCircles(data.screen.centerx, data.screen.centery, imageArray_arousal, window1, 'surround', rating_value, 'numAnswers', 4);
             Screen('Flip', window1);
             % Don't allow more answers
             flag_resp  = 0;
@@ -187,7 +189,7 @@ while trialCounter <= n
         end
     end
 
-    if (state == 2 || state == 3) && flag_resp && data.task.handedness == 2
+    if (state == 3 || state == 4) && flag_resp && data.task.handedness == 2
         if s.NumBytesAvailable > 0
             aux = read(s,1,'uint8');
             flush(s)
@@ -210,26 +212,31 @@ while trialCounter <= n
             rating_value = 4; fprintf('Answer - %d\n',rating_value)
         end
         aux = []; % reset aux
-        if state==3 && flag_input
-            rt_valence(trialCounter)     = toc(valence_time);
-            choice_valence(trialCounter) = rating_value;   
-            % Redraw all the circles with highlighted answer
-            Screen('DrawTexture', window1, texture, [], dst_rect_valence);
-            drawCircles(data.screen.centerx, data.screen.centery, imageArray_valence, window1, 'surround', rating_value, 'numAnswers', 4);
-            Screen('Flip', window1);
-            % Don't allow more answers
-            flag_resp  = 0;
-            flag_input = 0;       
-        elseif state==4 && flag_input
-            rt_arousal(trialCounter)     = toc(arousal_time);
-            choice_arousal(trialCounter) = rating_value;   
-            % Redraw all the circles with highlighted answer
-            Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
-            drawCircles(data.screen.centerx, data.screen.centery, imageArray_arousal, window1, 'surround', rating_value, 'numAnswers', 4);
-            Screen('Flip', window1);
-            % Don't allow more answers
-            flag_resp  = 0;
-            flag_input = 0;            
+        switch state
+            case 3
+            if flag_input
+                rt_valence(trialCounter)     = toc(valence_time);
+                choice_valence(trialCounter) = rating_value;   
+                % Redraw all the circles with highlighted answer
+                Screen('DrawTexture', window1, texture, [], dst_rect_valence);
+                drawCircles(data.screen.centerx, data.screen.centery, imageArray_valence, window1, 'surround', rating_value, 'numAnswers', 4);
+                Screen('Flip', window1);
+                % Don't allow more answers
+                flag_resp  = 0;
+                flag_input = 0;
+            end
+            case 4
+            if flag_input
+                rt_arousal(trialCounter)     = toc(arousal_time);
+                choice_arousal(trialCounter) = rating_value;   
+                % Redraw all the circles with highlighted answer
+                Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
+                drawCircles(data.screen.centerx, data.screen.centery, imageArray_arousal, window1, 'surround', rating_value, 'numAnswers', 4);
+                Screen('Flip', window1);
+                % Don't allow more answers
+                flag_resp  = 0;
+                flag_input = 0;  
+            end
         end
         rating_value = NaN; % reset rating
     end
