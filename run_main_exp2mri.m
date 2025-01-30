@@ -61,7 +61,7 @@ stim              = cell(1,n);
 % - capture time information
 
 eventCounter = 1;
-event_table  = table('Size', [tr_final*2, 4],...
+event_table  = table('Size', [tr_final*2+50, 4],...
     'VariableTypes', {'double', 'double', 'datetime', 'string'}, ...
     'VariableNames', {'TR', 'RelativeTime', 'Datetime', 'Description'});
 
@@ -92,12 +92,13 @@ while trialCounter <= n
     % Wait for first mri trigger
     if trueTrCount == -1 && ~data.debug
         aux        = read(s,1,'uint8'); disp(aux);
-        if aux == 115 
+        if aux == data.mri.tr_trigger 
             trueTrCount= trueTrCount + 1;
             begin_task = true;
             init_time  = tic;
             fprintf('Received first trigger: TR nº0 at %f seconds\n', toc(init_time))
         end
+        flush(s)
     % Simulate first trigger (debug mode)
     elseif trueTrCount == -1 && data.debug
         trueTrCount= trueTrCount + 1;
@@ -119,14 +120,18 @@ while trialCounter <= n
     % Fetch true mri triggers
     if ~data.debug
         if s.NumBytesAvailable > 0 && trueTrCount ~= -1
-            mri_trigger = read(s,1,'uint8');
-            if ~isempty(mri_trigger) && (mri_trigger == 115)
-                % create event
-                [event_table,eventCounter,trueTrCount] = create_event(event_table,...
-                eventCounter, trueTrCount, "TrueTR", toc(init_time), datetime('now','Format','dd-MMM-yyyy HH:mm:ss.SS'));
-                fprintf('Fetching mri trigger at %f seconds - TR nº%d\n', toc(init_time), trueTrCount);
+            allBytes = read(s, s.NumBytesAvailable, 'uint8'); % Read all available bytes
+            for i = 1:length(allBytes)
+                byte = allBytes(i);
+                if byte == data.mri.tr_trigger
+                    % Log TR event
+                    [event_table,eventCounter,trueTrCount] = create_event(event_table,...
+                    eventCounter, trueTrCount, "TrueTR", toc(init_time), datetime('now','Format','dd-MMM-yyyy HH:mm:ss.SS'));
+                    fprintf('Fetching mri trigger at %f seconds - TR nº%d\n', toc(init_time), trueTrCount);
+                end
             end
-            flush(s)
+            % Clear buffer after loop (useless?)
+            allBytes = [];
         end
     end
     
@@ -188,57 +193,70 @@ while trialCounter <= n
             rating_value = NaN;
         end
     end
-
+    % When enterring this module (2 handed), note thatthe same port will receive
+    % triggers from the TR and joystick, which can (and will) mess up the events 
     if (state == 3 || state == 4) && flag_resp && data.task.handedness == 2
-        if s.NumBytesAvailable > 0
-            aux = read(s,1,'uint8');
-            flush(s)
+        if s.NumBytesAvailable > 0 && ~data.debug
+            allBytes = read(s, s.NumBytesAvailable, 'uint8'); % reading removes the bytes from the buffer
+            for i = 1:length(allBytes)
+                byte = allBytes(i);
+                if byte == data.mri.tr_trigger
+                    % Process TR
+                    [event_table,eventCounter,trueTrCount] = create_event(event_table,...
+                    eventCounter, trueTrCount, "TrueTR", toc(init_time), datetime('now','Format','dd-MMM-yyyy HH:mm:ss.SS'));
+                    fprintf('Fetching mri trigger at %f seconds - TR nº%d\n', toc(init_time), trueTrCount);
+                else
+                    % Process response
+                    aux = byte;
+                    if aux == button1
+                        disp('button1-------------------------------------------')
+                        flag_input   = 1;          
+                        rating_value = 1; fprintf('Answer - %d\n',rating_value)
+                    elseif aux == button2
+                        disp('button2-------------------------------------------')
+                        flag_input   = 1;            
+                        rating_value = 2; fprintf('Answer - %d\n',rating_value)
+                    elseif aux == button3
+                        disp('button3-------------------------------------------')
+                        flag_input   = 1;            
+                        rating_value = 3; fprintf('Answer - %d\n',rating_value)            
+                    elseif aux == button4
+                        disp('button4-------------------------------------------')
+                        flag_input   = 1;            
+                        rating_value = 4; fprintf('Answer - %d\n',rating_value)
+                    end
+                end
+            end
+            % Clear buffer after loop (useless?)
+            allBytes = [];
         end
-        if aux == button1
-            disp('button1-------------------------------------------')
-            flag_input   = 1;          
-            rating_value = 1; fprintf('Answer - %d\n',rating_value)
-        elseif aux == button2
-            disp('button2-------------------------------------------')
-            flag_input   = 1;            
-            rating_value = 2; fprintf('Answer - %d\n',rating_value)
-        elseif aux == button3
-            disp('button3-------------------------------------------')
-            flag_input   = 1;            
-            rating_value = 3; fprintf('Answer - %d\n',rating_value)            
-        elseif aux == button4
-            disp('button4-------------------------------------------')
-            flag_input   = 1;            
-            rating_value = 4; fprintf('Answer - %d\n',rating_value)
+        % Handle flag_input and update state
+        if flag_input
+            switch state
+                case 3
+                    rt_valence(trialCounter)     = toc(valence_time);
+                    choice_valence(trialCounter) = rating_value;   
+                    % Redraw all the circles with highlighted answer
+                    Screen('DrawTexture', window1, texture, [], dst_rect_valence);
+                    drawCircles(data.screen.centerx, data.screen.centery, imageArray_valence, window1, 'surround', rating_value, 'numAnswers', 4);
+                    Screen('Flip', window1);
+                    % Don't allow more answers
+                    flag_resp  = 0;
+                    flag_input = 0;
+                case 4
+                    rt_arousal(trialCounter)     = toc(arousal_time);
+                    choice_arousal(trialCounter) = rating_value;   
+                    % Redraw all the circles with highlighted answer
+                    Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
+                    drawCircles(data.screen.centerx, data.screen.centery, imageArray_arousal, window1, 'surround', rating_value, 'numAnswers', 4);
+                    Screen('Flip', window1);
+                    % Don't allow more answers
+                    flag_resp  = 0;
+                    flag_input = 0;  
+            end
+            rating_value = NaN; % reset rating
         end
         aux = []; % reset aux
-        switch state
-            case 3
-            if flag_input
-                rt_valence(trialCounter)     = toc(valence_time);
-                choice_valence(trialCounter) = rating_value;   
-                % Redraw all the circles with highlighted answer
-                Screen('DrawTexture', window1, texture, [], dst_rect_valence);
-                drawCircles(data.screen.centerx, data.screen.centery, imageArray_valence, window1, 'surround', rating_value, 'numAnswers', 4);
-                Screen('Flip', window1);
-                % Don't allow more answers
-                flag_resp  = 0;
-                flag_input = 0;
-            end
-            case 4
-            if flag_input
-                rt_arousal(trialCounter)     = toc(arousal_time);
-                choice_arousal(trialCounter) = rating_value;   
-                % Redraw all the circles with highlighted answer
-                Screen('DrawTexture', window1, texture, [], dst_rect_arousal);
-                drawCircles(data.screen.centerx, data.screen.centery, imageArray_arousal, window1, 'surround', rating_value, 'numAnswers', 4);
-                Screen('Flip', window1);
-                % Don't allow more answers
-                flag_resp  = 0;
-                flag_input = 0;  
-            end
-        end
-        rating_value = NaN; % reset rating
     end
 
 % ------------------------------------------------------------------------%
@@ -426,6 +444,8 @@ addRunColumn = ones(n,1).*str2double(data.input{3});
 addSubColumn = repmat(data.input{1}, n, 1);
 logTable     = table(addSubColumn, addRunColumn, choice_valence', rt_valence', choice_arousal', rt_arousal', stim',...
     'VariableNames', {'sub', 'run', 'valence', 'rt_valence', 'arousal', 'rt_arousal', 'stimulus'});
+save([data.dir.logs_path filesep data.output.log_file_name '.mat'], 'logTable');
+
 if data.output.export_xlsx
     % Write the log table to an XLSX file
     writetable(logTable, [data.dir.logs_path filesep data.output.log_file_name '.xlsx']);
@@ -439,6 +459,10 @@ end
 % ------------------------------------------------------------------------%
 %                        Convert Event File into TSV/XLSX                 %
 % ------------------------------------------------------------------------%
+
+% Remove NaT rows and save as .mat file
+event_table = event_table(~isnat(event_table.Datetime),:);
+save([data.dir.event_path filesep data.output.event_file_name '.mat'], 'event_table');
 
 if data.output.export_xlsx
     % Write the table to an XLSX file

@@ -44,13 +44,13 @@ data.format.text_color       = [0 0 0];       % rgb
 % Text
 data.text.taskname          = 'videorating';
 data.text.getready_en       = 'The experiment will start shortly... Keep your eyes fixed on the cross';
-data.text.getready_pt       = 'A experiência começará em breve... Mantenha o olhar fixo na cruz';
+data.text.getready_pt       = 'A experiï¿½ncia comeï¿½arï¿½ em breve... Mantenha o olhar fixo na cruz';
 data.text.starting_en       = 'Starting in';
-data.text.starting_pt       = 'Começa em';
+data.text.starting_pt       = 'Comeï¿½a em';
 data.text.baselineClosed_en = 'Baseline with eyes closed will start shortly';
-data.text.baselineClosed_pt = 'O período de relaxamento com olhos fechados começará em breve';
+data.text.baselineClosed_pt = 'O perï¿½odo de relaxamento com olhos fechados comeï¿½arï¿½ em breve';
 data.text.baselineOpen_en   = 'Baseline with eyes open will start shortly';
-data.text.baselineOpen_pt   = 'O período de relaxamento com olhos abertos começará em breve';
+data.text.baselineOpen_pt   = 'O perï¿½odo de relaxamento com olhos abertos comeï¿½arï¿½ em breve';
 
 % Stimuli
 data.stim.image_size        = [];
@@ -61,7 +61,7 @@ data.stim.image_size        = [];
 
 % get user input for usage or not of eyelink
 prompt={'Introduza o ID do participante',...
-    'Linguagem da tarefa','Indique o número da sessão (run)'};
+    'Linguagem da tarefa','Indique o nï¿½mero da sessï¿½o (run)'};
 dlg_title='Input';
 % Fot this experiment participant_id will be SRMRI (Scenario Rating Mri)
 data.input = inputdlg(prompt,dlg_title,1,{'SRM','pt','1'});
@@ -156,7 +156,8 @@ end
 % ------------------------------------------------------------------------%
 
 % MRI only
-data.mri.tr           = 2; % in seconds
+data.mri.tr           = 2;   % in seconds
+data.mri.tr_trigger   = 115; % code for the trigger
 data.mri.num_volumes  = data.mri.tr*1;
 data.mri.num_slices   = 36;
 data.mri.echo_time    = [];
