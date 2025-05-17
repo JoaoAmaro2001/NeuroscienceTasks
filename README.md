@@ -1,6 +1,10 @@
 # NeuroscienceTasks
 Repository containing computational neuroscience tasks.
 
+## Authors
+- João Amaro, Faculty of Medicine, University of Lisbon
+- Pedro Rocha, Faculty of Medicine, University of Lisbon
+
 ## TODO
 - [ ] Add the neurosurgery task paradigms.
 
